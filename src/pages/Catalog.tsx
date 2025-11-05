@@ -15,11 +15,11 @@ export default function Catalog() {
   }, []);
 
   return (
-    <div className="catalog-container">
+    <div className="catalog-page">
       <h2 className="catalog-title">Каталог костюмов</h2>
-      {costumes.length === 0 && (
-        <p className="empty-text">Костюмы не найдены 😢</p>
-      )}
+
+      {costumes.length === 0 && <p className="empty">Костюмы не найдены 😢</p>}
+
       <div className="catalog-grid">
         {costumes.map((c) => (
           <CostumeCard
