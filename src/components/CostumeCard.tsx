@@ -1,22 +1,26 @@
-export default function CostumeCard({ costume, onClick }: any) {
+import React from "react";
+
+interface CostumeCardProps {
+  costume: any;
+  onClick: () => void;
+}
+
+export default function CostumeCard({ costume, onClick }: CostumeCardProps) {
   return (
     <div
+      className="costume-card"
       onClick={onClick}
-      style={{
-        border: "1px solid #ddd",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 10,
-        cursor: "pointer"
-      }}
     >
       <img
-        src={costume.photos?.[0]}
+        src={costume.photos?.[0] || "https://via.placeholder.com/300x400?text=No+Photo"}
         alt={costume.title}
-        style={{ width: "100%", borderRadius: 8 }}
+        className="costume-image"
       />
-      <h3>{costume.title}</h3>
-      <p>Цена: {costume.price} ₽</p>
+      <div className="costume-info">
+        <h3>{costume.title}</h3>
+        {costume.price && <p className="price">{costume.price} ₽</p>}
+        <button className="book-btn">Бронировать</button>
+      </div>
     </div>
   );
 }

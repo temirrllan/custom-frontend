@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import CostumeCard from "../components/CostumeCard";
+import "./Catalog.css";
 
 export default function Catalog() {
   const [costumes, setCostumes] = useState<any[]>([]);
@@ -12,21 +13,22 @@ export default function Catalog() {
       .then(setCostumes)
       .catch((err) => console.error("Ошибка загрузки каталога:", err));
   }, []);
-console.log("Костюмы:", costumes);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Каталог костюмов</h2>
-      {costumes.length === 0 && <p>Костюмы не найдены 😢</p>}
-      {costumes.map((c) => (
-        <CostumeCard
-          key={c._id}
-          costume={c}
-          onClick={() => navigate(`/costume/${c._id}`)}
-        />
-        
-      ))}
+    <div className="catalog-container">
+      <h2 className="catalog-title">Каталог костюмов</h2>
+      {costumes.length === 0 && (
+        <p className="empty-text">Костюмы не найдены 😢</p>
+      )}
+      <div className="catalog-grid">
+        {costumes.map((c) => (
+          <CostumeCard
+            key={c._id}
+            costume={c}
+            onClick={() => navigate(`/costume/${c._id}`)}
+          />
+        ))}
+      </div>
     </div>
-    
   );
 }
