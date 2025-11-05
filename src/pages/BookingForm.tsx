@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { createBooking } from "../api/api";
-import WebApp from "@twa-dev/sdk"; // ✅ вот этот импорт обязателен
+import WebApp from "@twa-dev/sdk";
+import "./BookingForm.css"; // ✅ добавляем стили
 
 export default function BookingForm() {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export default function BookingForm() {
     size: "",
     childName: "",
     childAge: "",
-    childHeight: ""
+    childHeight: "",
   });
 
   const [message, setMessage] = useState("");
@@ -26,30 +27,54 @@ export default function BookingForm() {
       await createBooking({
         userTgId: WebApp.initDataUnsafe?.user?.id || 0,
         costumeId: id,
-        ...form
+        ...form,
       });
-      setMessage("Заявка отправлена!");
+      setMessage("✅ Заявка успешно отправлена!");
+      setForm({
+        clientName: "",
+        phone: "",
+        size: "",
+        childName: "",
+        childAge: "",
+        childHeight: "",
+      });
     } catch (err) {
       console.error(err);
-      setMessage("Ошибка при отправке 😔");
+      setMessage("❌ Ошибка при отправке. Попробуйте снова.");
     }
   };
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Бронирование</h2>
-      {["clientName","phone","size","childName","childAge","childHeight"].map((f) => (
-        <input
-          key={f}
-          name={f}
-          placeholder={f}
-          value={(form as any)[f]}
-          onChange={handleChange}
-          style={{ display: "block", marginBottom: 8, width: "100%" }}
-        />
-      ))}
-      <button onClick={handleSubmit}>Отправить</button>
-      {message && <p>{message}</p>}
+    <div className="booking-wrapper">
+      <h2 className="booking-title">Бронирование костюма</h2>
+
+      <div className="booking-form">
+        {[
+          { name: "clientName", label: "Ваше имя" },
+          { name: "phone", label: "Телефон" },
+          { name: "size", label: "Размер" },
+          { name: "childName", label: "Имя ребёнка" },
+          { name: "childAge", label: "Возраст ребёнка" },
+          { name: "childHeight", label: "Рост ребёнка (см)" },
+        ].map((field) => (
+          <div key={field.name} className="input-group">
+            <input
+              name={field.name}
+              placeholder=" "
+              value={(form as any)[field.name]}
+              onChange={handleChange}
+              required
+            />
+            <label>{field.label}</label>
+          </div>
+        ))}
+
+        <button className="submit-btn" onClick={handleSubmit}>
+          Отправить заявку
+        </button>
+
+        {message && <p className="form-message">{message}</p>}
+      </div>
     </div>
   );
 }
