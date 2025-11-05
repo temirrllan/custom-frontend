@@ -7,8 +7,9 @@ export const api = axios.create({
 });
 
 export async function getCostumes() {
-  const res = await api.get("/api/costumes");
-  return res.data;
+  const res = await fetch(`${API_BASE}/api/costumes`);
+  if (!res.ok) throw new Error("Failed to fetch costumes");
+  return res.json();
 }
 
 export async function createBooking(data: any) {

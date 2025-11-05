@@ -8,19 +8,25 @@ export default function Catalog() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getCostumes().then(setCostumes);
+    getCostumes()
+      .then(setCostumes)
+      .catch((err) => console.error("Ошибка загрузки каталога:", err));
   }, []);
+console.log("Костюмы:", costumes);
 
   return (
     <div style={{ padding: 16 }}>
       <h2>Каталог костюмов</h2>
-      {costumes.map(c => (
+      {costumes.length === 0 && <p>Костюмы не найдены 😢</p>}
+      {costumes.map((c) => (
         <CostumeCard
           key={c._id}
           costume={c}
           onClick={() => navigate(`/costume/${c._id}`)}
         />
+        
       ))}
     </div>
+    
   );
 }
