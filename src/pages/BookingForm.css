@@ -1,87 +1,112 @@
 .booking-wrapper {
-  padding: 20px;
-  background-color: var(--tg-theme-bg-color, #f5f5f5);
-  color: var(--tg-theme-text-color, #222);
   font-family: "Inter", sans-serif;
+  background: var(--tg-theme-bg-color, #f2f2f7);
+  color: var(--tg-theme-text-color, #1c1c1e);
   min-height: 100vh;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .booking-title {
+  font-size: 24px;
+  font-weight: 700;
   text-align: center;
   margin-bottom: 20px;
-  font-size: 22px;
-  font-weight: 700;
   color: var(--tg-theme-text-color, #222);
 }
 
 .booking-form {
-  background-color: var(--tg-theme-secondary-bg-color, #fff);
-  border-radius: 16px;
+  background: var(--tg-theme-secondary-bg-color, #ffffff);
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.3s ease;
 }
 
 .input-group {
   position: relative;
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .input-group input {
-  width: 100%;
-  padding: 12px;
+  padding: 14px 12px 10px;
   font-size: 15px;
-  border: 1px solid var(--tg-theme-hint-color, #ccc);
-  border-radius: 10px;
+  border: none;
+  border-radius: 12px;
+  background: var(--tg-theme-bg-color, #f2f2f7);
+  color: var(--tg-theme-text-color, #1c1c1e);
   outline: none;
-  background: transparent;
-  color: var(--tg-theme-text-color, #222);
-  transition: border-color 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .input-group input:focus {
-  border-color: var(--tg-theme-link-color, #007aff);
+  background: var(--tg-theme-secondary-bg-color, #fff);
+  box-shadow: 0 0 0 2px var(--tg-theme-link-color, #007aff);
 }
 
 .input-group label {
   position: absolute;
-  left: 12px;
-  top: 12px;
-  font-size: 14px;
+  top: 14px;
+  left: 14px;
+  font-size: 15px;
   color: var(--tg-theme-hint-color, #888);
-  transition: 0.2s;
   pointer-events: none;
+  transition: all 0.2s ease;
 }
 
 .input-group input:focus + label,
 .input-group input:not(:placeholder-shown) + label {
-  top: -8px;
-  left: 8px;
-  background-color: var(--tg-theme-secondary-bg-color, #fff);
-  padding: 0 4px;
+  top: 4px;
+  left: 12px;
   font-size: 12px;
+  font-weight: 600;
   color: var(--tg-theme-link-color, #007aff);
+  background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+  padding: 0 4px;
+  border-radius: 6px;
 }
 
 .submit-btn {
-  width: 100%;
-  padding: 12px;
   background-color: var(--tg-theme-button-color, #007aff);
-  color: var(--tg-theme-button-text-color, #fff);
-  font-weight: 600;
-  font-size: 16px;
+  color: var(--tg-theme-button-text-color, #ffffff);
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 122, 255, 0.25);
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .submit-btn:hover {
+  transform: translateY(-2px);
   opacity: 0.9;
 }
 
 .form-message {
   text-align: center;
-  margin-top: 12px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--tg-theme-link-color, #007aff);
+  margin-top: 10px;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

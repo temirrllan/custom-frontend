@@ -18,27 +18,38 @@ export default function CostumeDetails() {
     return <p className="loading-text">Загрузка костюма...</p>;
 
   return (
-    <div className="details-container">
-      <div className="image-wrapper">
+    <div className="page-container">
+      <header className="header">
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          ←
+        </button>
+        <h1 className="page-title">{costume.title}</h1>
+      </header>
+
+      <div className="card">
         <img
           src={costume.photos?.[0] || "https://via.placeholder.com/600x400?text=Нет+фото"}
           alt={costume.title}
           className="costume-image"
         />
+
+        <div className="info">
+          <h2>{costume.title}</h2>
+          <p className="desc">{costume.description || "Описание отсутствует"}</p>
+
+          <div className="price-block">
+            <span className="price">{costume.price} ₽</span>
+            <span className="label">за аренду</span>
+          </div>
+        </div>
       </div>
 
-      <div className="details-info">
-        <h2>{costume.title}</h2>
-        {costume.description && <p className="description">{costume.description}</p>}
-        <p className="price">{costume.price} ₽</p>
-
-        <button
-          className="book-btn"
-          onClick={() => navigate(`/book/${costume._id}`)}
-        >
-          Забронировать
-        </button>
-      </div>
+      <button
+        className="main-btn"
+        onClick={() => navigate(`/book/${costume._id}`)}
+      >
+        Забронировать
+      </button>
     </div>
   );
 }

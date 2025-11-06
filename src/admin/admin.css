@@ -1,0 +1,10 @@
+.admin-page, .admin-shell { font-family: Inter, sans-serif; }
+.admin-shell { display:flex; gap:20px; }
+.admin-sidebar { width:200px; background:var(--tg-theme-secondary-bg-color,#fff); padding:12px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+.admin-sidebar nav a { display:block; margin:8px 0; color:var(--tg-theme-link-color,#007aff); text-decoration:none; }
+.admin-content { flex:1; padding:16px; background:var(--tg-theme-bg-color,#f6f7fb); min-height:100vh;}
+.admin-card { background:var(--tg-theme-secondary-bg-color,#fff); padding:12px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+.admin-item { display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--tg-theme-secondary-bg-color,#fff); border-radius:10px; }
+.log-item { padding:8px; background:rgba(0,0,0,0.02); border-radius:8px; }
+button { border:none; background:var(--tg-theme-button-color,#007aff); color:var(--tg-theme-button-text-color,#fff); padding:8px 10px; border-radius:8px; cursor:pointer; }
+input, textarea, select { padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); width:100%; }
