@@ -1,26 +1,15 @@
 import WebApp from "@twa-dev/sdk";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-// --- Страницы пользователя ---
 import Catalog from "./pages/Catalog";
 import CostumeDetails from "./pages/CostumeDetails";
 import BookingForm from "./pages/BookingForm";
 
-// --- Админ-панель ---
-import AdminPanel from "./pages/AdminPanel";
+import { getUserInfo } from "./api/api"; // создадим, см. ниже
+import AdminPanel from "./pages/AdminPanel.js";
+import { useEffect, useState } from "react";
 
-// --- Другие (если будут нужны) ---
-import AdminLogin from "./admin/AdminLogin";
-import AdminLayout from "./admin/AdminLayout";
-import Dashboard from "./admin/Dashboard";
-import CostumesAdmin from "./admin/CostumesAdmin";
-import CostumeEditor from "./admin/CostumeEditor";
-import BookingsAdmin from "./admin/BookingsAdmin";
-import LogsAdmin from "./admin/LogsAdmin";
 
-// --- API ---
-import { getUserInfo } from "./api/api";
+
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
