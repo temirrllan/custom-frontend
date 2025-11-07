@@ -1,0 +1,134 @@
+/* === Общий контейнер (затемнение экрана) === */
+.admin-form-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+/* === Окно формы === */
+.admin-form {
+  background: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.25s ease;
+}
+
+/* === Заголовок === */
+.admin-form h3 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: var(--tg-theme-text-color);
+}
+
+/* === Инпуты === */
+.admin-form input[type="text"],
+.admin-form input[type="number"],
+.admin-form textarea {
+  width: 100%;
+  border: 1px solid var(--tg-theme-hint-color);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s border-color;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus {
+  border-color: var(--tg-theme-button-color);
+}
+
+/* === Чекбокс === */
+.admin-form label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  color: var(--tg-theme-hint-color);
+}
+
+.admin-form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--tg-theme-button-color);
+  cursor: pointer;
+}
+
+/* === Кнопки === */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s transform, 0.2s opacity;
+}
+
+.form-actions button:first-child {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+}
+
+.form-actions button:last-child {
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-hint-color);
+}
+
+.form-actions button:hover {
+  transform: scale(1.03);
+  opacity: 0.95;
+}
+
+/* === Анимация появления === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Для тёмной темы Telegram === */
+@media (prefers-color-scheme: dark) {
+  .admin-form {
+    background: #1c1c1e;
+    color: #f1f1f1;
+  }
+
+  .admin-form input,
+  .admin-form textarea {
+    background: #2c2c2e;
+    color: #f1f1f1;
+    border: 1px solid #3a3a3c;
+  }
+
+  .form-actions button:last-child {
+    background: #2c2c2e;
+    color: #ccc;
+  }
+}
