@@ -1,4 +1,5 @@
 import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -15,4 +16,9 @@ export async function getCostumes() {
 export async function createBooking(data: any) {
   const res = await api.post("/api/bookings", data);
   return res.data;
+}
+export async function getUserInfo(tgId: number) {
+  const res = await fetch(`${API_URL}/api/users/${tgId}`);
+  if (!res.ok) throw new Error("User not found");
+  return res.json();
 }
