@@ -1,26 +1,24 @@
 import "./AdminCostumeCard.css";
 
 export default function AdminCostumeCard({ costume, onEdit, onDelete }: any) {
-  const isHidden = !costume.available;
+  const isDisabled = !costume.available;
 
   return (
-    <div className={`admin-costume-card ${isHidden ? "disabled" : ""}`}>
-      <div className="photo-wrapper">
-        <img
-          src={costume.photos?.[0] || "/no-photo.png"}
-          alt={costume.title}
-        />
-        {isHidden && <div className="overlay">🚫 Недоступен</div>}
+    <div className={`admin-card ${isDisabled ? "disabled" : ""}`}>
+      <div className="image-wrapper">
+        <img src={costume.photos?.[0]} alt={costume.title} />
+        {isDisabled && <div className="overlay">🚫 Недоступен</div>}
       </div>
 
-      <div className="info">
-        <h3>{costume.title}</h3>
+      <div className="card-body">
+        <h4>{costume.title}</h4>
         <p>{costume.price} ₽</p>
-      </div>
+        <p className="sizes">Размеры: {costume.sizes?.join(", ")}</p>
 
-      <div className="actions">
-        <button onClick={onEdit}>✏️</button>
-        <button className="danger" onClick={onDelete}>🗑️</button>
+        <div className="buttons">
+          <button onClick={onEdit}>✏️</button>
+          <button onClick={onDelete}>🗑️</button>
+        </div>
       </div>
     </div>
   );
