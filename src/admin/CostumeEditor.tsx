@@ -11,8 +11,10 @@ export default function CostumeEditor() {
     title: "",
     price: 0,
     sizes: [],
-    photos: [],
     stockBySize: {},
+    heightRange: "",
+    notes: "",
+    photos: [],
     available: true,
     description: "",
   });
@@ -22,14 +24,12 @@ export default function CostumeEditor() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // 🔗 Преобразует относительный путь в полный
   const toFullUrl = (path: string) => {
     if (!path) return "";
     if (path.startsWith("http")) return path;
     return `${API_BASE}${path}`;
   };
 
-  // ✅ Загружаем текущие данные костюма
   useEffect(() => {
     if (!id || id === "new") return;
     setLoading(true);
@@ -38,7 +38,6 @@ export default function CostumeEditor() {
       .then((res: any) => {
         const found = res.data.find((c: any) => c._id === id);
         if (found) {
-          // Если у костюма уже есть фото — подставляем с абсолютными ссылками
           const fullPhotos = found.photos?.map((p: string) => toFullUrl(p)) || [];
           setState({ ...found, photos: fullPhotos });
         } else {
@@ -50,7 +49,6 @@ export default function CostumeEditor() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // ✅ Показываем превью сразу после выбора файлов
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -60,7 +58,6 @@ export default function CostumeEditor() {
     setFiles(files);
   };
 
-  // ✅ Загрузка файлов на сервер
   const uploadFiles = async (): Promise<string[]> => {
     if (!files || files.length === 0) return [];
     const form = new FormData();
@@ -71,7 +68,6 @@ export default function CostumeEditor() {
     return r.data.urls;
   };
 
-  // ✅ Сохранение (обновление или создание)
   const save = async () => {
     if (!state.title.trim()) return alert("Введите название костюма");
     if (state.price <= 0) return alert("Цена должна быть больше 0");
@@ -97,7 +93,6 @@ export default function CostumeEditor() {
     }
   };
 
-  // ✅ Удаление фото
   const removePhoto = (index: number) => {
     const updated = [...(state.photos || [])];
     updated.splice(index, 1);
@@ -142,11 +137,48 @@ export default function CostumeEditor() {
             placeholder="0"
             type="number"
             value={state.price}
-            onChange={(e) =>
-              setState({ ...state, price: Number(e.target.value) })
-            }
+            onChange={(e) => setState({ ...state, price: Number(e.target.value) })}
             min="0"
             step="100"
+          />
+        </div>
+
+        {/* Размеры */}
+        <div>
+          <label>Размеры (через запятую)</label>
+          <input
+            placeholder="Например: 92, 98, 104"
+            value={state.sizes?.join(", ") || ""}
+            onChange={(e) =>
+              setState({
+                ...state,
+                sizes: e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              })
+            }
+          />
+        </div>
+
+        {/* Рост */}
+        <div>
+          <label>Диапазон роста</label>
+          <input
+            placeholder="Например: 90–110 см"
+            value={state.heightRange || ""}
+            onChange={(e) => setState({ ...state, heightRange: e.target.value })}
+          />
+        </div>
+
+        {/* Примечание */}
+        <div>
+          <label>Примечание</label>
+          <textarea
+            placeholder="Например: требует химчистки или есть дефекты"
+            value={state.notes || ""}
+            onChange={(e) => setState({ ...state, notes: e.target.value })}
+            rows={3}
           />
         </div>
 
@@ -156,9 +188,7 @@ export default function CostumeEditor() {
           <textarea
             placeholder="Введите описание костюма"
             value={state.description}
-            onChange={(e) =>
-              setState({ ...state, description: e.target.value })
-            }
+            onChange={(e) => setState({ ...state, description: e.target.value })}
             rows={4}
           />
         </div>
@@ -167,9 +197,7 @@ export default function CostumeEditor() {
         <div>
           <label style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div
-              onClick={() =>
-                setState({ ...state, available: !state.available })
-              }
+              onClick={() => setState({ ...state, available: !state.available })}
               style={{
                 width: 50,
                 height: 26,
@@ -194,9 +222,7 @@ export default function CostumeEditor() {
               />
             </div>
             <span>
-              {state.available
-                ? "Доступен пользователям ✅"
-                : "Недоступен ❌"}
+              {state.available ? "Доступен пользователям ✅" : "Недоступен ❌"}
             </span>
           </label>
         </div>
@@ -211,10 +237,7 @@ export default function CostumeEditor() {
               {state.photos.map((photo: string, index: number) => (
                 <div key={index} className="photo-preview">
                   <img src={photo} alt={`Фото ${index + 1}`} />
-                  <button
-                    className="danger"
-                    onClick={() => removePhoto(index)}
-                  >
+                  <button className="danger" onClick={() => removePhoto(index)}>
                     ×
                   </button>
                 </div>
