@@ -12,8 +12,16 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    const data = await getAdminCostumes();
-    setCostumes(data);
+    setLoading(true);
+    try {
+      const data = await getAdminCostumes();
+      setCostumes(data);
+    } catch (err) {
+      console.error("Ошибка при загрузке костюмов:", err);
+      setCostumes([]); // или оставьте прежний массив по необходимости
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -26,7 +34,8 @@ export default function AdminPanel() {
       await load();
     }
   };
-if (loading) return <Loader text="Загрузка панели..." />;
+
+  if (loading) return <Loader text="Загрузка панели..." />;
 
   return (
     <div className="admin-panel">
