@@ -161,26 +161,26 @@ export default function CostumeEditor() {
           />
         </div>
 
-        {/* Рост */}
-        <div>
-          <label>Диапазон роста</label>
-          <input
-            placeholder="Например: 90–110 см"
-            value={state.heightRange || ""}
-            onChange={(e) => setState({ ...state, heightRange: e.target.value })}
-          />
-        </div>
+        {/* Рост (диапазон) */}
+<div>
+  <label>Рост (например, 110–130 см)</label>
+  <input
+    placeholder="Введите диапазон роста"
+    value={state.heightRange || ""}
+    onChange={(e) => setState({ ...state, heightRange: e.target.value })}
+  />
+</div>
 
-        {/* Примечание */}
-        <div>
-          <label>Примечание</label>
-          <textarea
-            placeholder="Например: требует химчистки или есть дефекты"
-            value={state.notes || ""}
-            onChange={(e) => setState({ ...state, notes: e.target.value })}
-            rows={3}
-          />
-        </div>
+{/* Примечание */}
+<div>
+  <label>Примечание</label>
+  <textarea
+    placeholder="Добавьте уточнение (например, «Есть шляпа в комплекте»)"
+    value={state.notes || ""}
+    onChange={(e) => setState({ ...state, notes: e.target.value })}
+    rows={3}
+  />
+</div>
 
         {/* Описание */}
         <div>
