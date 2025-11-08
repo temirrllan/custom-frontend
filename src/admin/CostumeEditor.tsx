@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { API_BASE, adminApi } from "../api/adminApi"; // ✅ правильный импорт
+import { API_BASE, adminApi } from "../api/adminApi";
 import { useNavigate, useParams } from "react-router-dom";
 import "./admin.css";
-
 
 export default function CostumeEditor() {
   const { id } = useParams();
   const nav = useNavigate();
+
   const [state, setState] = useState<any>({
     title: "",
     price: 0,
@@ -16,7 +16,8 @@ export default function CostumeEditor() {
     available: true,
     description: "",
   });
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]); // ✅ локальные превью
+
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [files, setFiles] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -28,18 +29,25 @@ export default function CostumeEditor() {
     return `${API_BASE}${path}`;
   };
 
+  // ✅ Загружаем текущие данные костюма
   useEffect(() => {
-    if (id && id !== "new") {
-      setLoading(true);
-      adminApi
-  .get(`/api/admin/costumes`)
-  .then((r: any) => {
-    const found = r.data.find((x: any) => x._id === id);
-    if (found) setState(found);
-  })
-
-        .finally(() => setLoading(false));
-    }
+    if (!id || id === "new") return;
+    setLoading(true);
+    adminApi
+      .get(`/api/admin/costumes`)
+      .then((res: any) => {
+        const found = res.data.find((c: any) => c._id === id);
+        if (found) {
+          // Если у костюма уже есть фото — подставляем с абсолютными ссылками
+          const fullPhotos = found.photos?.map((p: string) => toFullUrl(p)) || [];
+          setState({ ...found, photos: fullPhotos });
+        } else {
+          alert("Костюм не найден");
+          nav("/admin/costumes");
+        }
+      })
+      .catch((err) => console.error("Ошибка загрузки костюма:", err))
+      .finally(() => setLoading(false));
   }, [id]);
 
   // ✅ Показываем превью сразу после выбора файлов
@@ -63,15 +71,10 @@ export default function CostumeEditor() {
     return r.data.urls;
   };
 
+  // ✅ Сохранение (обновление или создание)
   const save = async () => {
-    if (!state.title.trim()) {
-      alert("Введите название костюма");
-      return;
-    }
-    if (state.price <= 0) {
-      alert("Цена должна быть больше 0");
-      return;
-    }
+    if (!state.title.trim()) return alert("Введите название костюма");
+    if (state.price <= 0) return alert("Цена должна быть больше 0");
 
     setSaving(true);
     try {
@@ -84,19 +87,21 @@ export default function CostumeEditor() {
         await adminApi.post(`/api/admin/costumes`, payload);
       }
 
+      alert("✅ Костюм успешно сохранён!");
       nav("/admin/costumes");
-    } catch (error) {
-      alert("Ошибка при сохранении");
-      console.error(error);
+    } catch (err) {
+      console.error("Ошибка при сохранении:", err);
+      alert("Ошибка при сохранении костюма");
     } finally {
       setSaving(false);
     }
   };
 
+  // ✅ Удаление фото
   const removePhoto = (index: number) => {
-    const newPhotos = [...(state.photos || [])];
-    newPhotos.splice(index, 1);
-    setState({ ...state, photos: newPhotos });
+    const updated = [...(state.photos || [])];
+    updated.splice(index, 1);
+    setState({ ...state, photos: updated });
   };
 
   if (loading) {
@@ -109,7 +114,7 @@ export default function CostumeEditor() {
             color: "var(--tg-theme-hint-color, #8e8e93)",
           }}
         >
-          Загрузка...
+          Загрузка данных костюма...
         </div>
       </div>
     );
@@ -205,7 +210,7 @@ export default function CostumeEditor() {
             <div className="photo-grid">
               {state.photos.map((photo: string, index: number) => (
                 <div key={index} className="photo-preview">
-                  <img src={toFullUrl(photo)} alt={`Фото ${index + 1}`} />
+                  <img src={photo} alt={`Фото ${index + 1}`} />
                   <button
                     className="danger"
                     onClick={() => removePhoto(index)}
@@ -217,7 +222,7 @@ export default function CostumeEditor() {
             </div>
           )}
 
-          {/* Новые фото (превью до загрузки) */}
+          {/* Новые фото (предпросмотр) */}
           {previewUrls.length > 0 && (
             <div className="photo-grid">
               {previewUrls.map((url, i) => (
@@ -234,9 +239,7 @@ export default function CostumeEditor() {
             accept="image/png,image/jpeg,image/webp"
             onChange={handleFileChange}
           />
-          <p className="hint">
-            До 5 фото (JPG, PNG, WebP, ≤ 2 МБ каждое)
-          </p>
+          <p className="hint">До 5 фото (JPG, PNG, WebP, ≤ 2 МБ каждое)</p>
         </div>
 
         {/* Кнопки */}
