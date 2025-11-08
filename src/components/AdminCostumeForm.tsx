@@ -23,7 +23,7 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
   // previews — отображаемые картинки (blob: или полные http(s) ссылки)
   const [previews, setPreviews] = useState<string[]>([]);
   // localFiles — файлы, которые ещё не были загружены (соответствуют началу previews)
-  const [localFiles, setLocalFiles] = useState<File[]>([]);
+  const [, setLocalFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>("");
 
