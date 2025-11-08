@@ -47,37 +47,46 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: CostumeFo
 
   // ✅ Обработка загрузки фото
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+  const files = e.target.files;
+  if (!files) return;
 
-    if (files.length + form.photos.length > 5) {
-      setError("Максимум 5 фото");
-      return;
-    }
+  if (files.length + form.photos.length > 5) {
+    setError("Максимум 5 фото");
+    return;
+  }
 
-    const validFiles = Array.from(files).filter((f) =>
-      ["image/jpeg", "image/png", "image/webp"].includes(f.type)
+  const validFiles = Array.from(files).filter((f) =>
+    ["image/jpeg", "image/png", "image/webp"].includes(f.type)
+  );
+
+  const tooBig = validFiles.find((f) => f.size > 2 * 1024 * 1024);
+  if (tooBig) {
+    setError("Размер файла не должен превышать 2 МБ");
+    return;
+  }
+
+  // ✅ Локальные превью до загрузки
+  const localPreviews = validFiles.map((f) => URL.createObjectURL(f));
+  setPreviews((prev) => [...prev, ...localPreviews]);
+
+  setUploading(true);
+  try {
+    const res = await uploadPhotos(validFiles);
+    const urls = res.urls;
+    setForm((prev) => ({ ...prev, photos: [...prev.photos, ...urls] }));
+
+    // Заменяем локальные preview на серверные ссылки
+    setPreviews((prev) =>
+      prev.map((p) => (localPreviews.includes(p) ? urls.shift() || p : p))
     );
+  } catch (err) {
+    setError("Ошибка загрузки фото");
+    console.error(err);
+  } finally {
+    setUploading(false);
+  }
+};
 
-    const tooBig = validFiles.find((f) => f.size > 2 * 1024 * 1024);
-    if (tooBig) {
-      setError("Размер файла не должен превышать 2 МБ");
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const res = await uploadPhotos(validFiles);
-      const urls = res.urls;
-      setForm((prev) => ({ ...prev, photos: [...prev.photos, ...urls] }));
-      setPreviews((prev) => [...prev, ...urls]);
-    } catch (err) {
-      setError("Ошибка загрузки фото");
-      console.error(err);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSubmit = async () => {
     setError("");
@@ -117,11 +126,18 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: CostumeFo
           onChange={handleChange}
         />
 
-        <label className="checkbox">
-          <input type="checkbox" name="available" checked={form.available} onChange={handleChange} />
-          Доступен пользователям
-        </label>
-
+        <div className="toggle-wrapper">
+  <span>Доступен пользователям</span>
+  <label className="toggle">
+    <input
+      type="checkbox"
+      name="available"
+      checked={form.available}
+      onChange={handleChange}
+    />
+    <span className="slider" />
+  </label>
+</div>
         <div className="photo-upload">
           <label className="upload-label">
             📸 Загрузить фото (до 5)
