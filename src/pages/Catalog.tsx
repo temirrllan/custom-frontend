@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "./Catalog.css";
+import { API_BASE } from "../api/admin"; // добавляем импорт
 
 export default function Catalog() {
   const [costumes, setCostumes] = useState<any[]>([]);
@@ -12,7 +13,12 @@ export default function Catalog() {
       .then(setCostumes)
       .catch((err) => console.error("Ошибка загрузки каталога:", err));
   }, []);
-
+ // вспомогательная функция — формирует полный URL к фото
+  function toFullUrl(path?: string) {
+    if (!path) return "https://via.placeholder.com/400x300?text=Нет+фото";
+    if (path.startsWith("http")) return path;
+    return `${API_BASE}${path}`;
+  }
   return (
     <div className="catalog-page">
       <header className="catalog-header">
@@ -32,9 +38,10 @@ export default function Catalog() {
             >
               <div className="image-wrapper">
                 <img
-                  src={c.photos?.[0] || "https://via.placeholder.com/400x300?text=Нет+фото"}
+                  src={toFullUrl(c.photos?.[0])} // ✅ теперь всегда работает
                   alt={c.title}
                   className="costume-img"
+                  loading="lazy"
                 />
               </div>
               <div className="costume-info">

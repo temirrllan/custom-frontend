@@ -1,7 +1,7 @@
 import WebApp from "@twa-dev/sdk";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const headers = (): HeadersInit => ({
   "Content-Type": "application/json",
@@ -45,11 +45,12 @@ export async function uploadPhotos(files: File[]) {
   const res = await fetch(`${API_BASE}/api/admin/upload`, {
     method: "POST",
     body: formData,
-    headers: {
-      "x-tg-id": String(WebApp.initDataUnsafe?.user?.id || 0),
-    },
+    headers: { "x-tg-id": String(WebApp.initDataUnsafe?.user?.id || 0) },
   });
 
-  if (!res.ok) throw new Error("Ошибка при загрузке файлов");
-  return res.json();
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error("Ошибка при загрузке файлов: " + txt);
+  }
+  return res.json(); 
 }
