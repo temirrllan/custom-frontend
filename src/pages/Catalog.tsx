@@ -3,16 +3,23 @@ import { getCostumes } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "./Catalog.css";
 import { API_BASE } from "../api/admin"; // добавляем импорт
+import Loader from "../components/Loader";
 
 export default function Catalog() {
   const [costumes, setCostumes] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getCostumes()
-      .then(setCostumes)
-      .catch((err) => console.error("Ошибка загрузки каталога:", err));
-  }, []);
+ const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  getCostumes()
+    .then(setCostumes)
+    .catch((err) => console.error("Ошибка загрузки каталога:", err))
+    .finally(() => setLoading(false));
+}, []);
+
+if (loading) return <Loader text="Загружаем костюмы..." />;
+
  // вспомогательная функция — формирует полный URL к фото
   function toFullUrl(path?: string) {
     if (!path) return "https://via.placeholder.com/400x300?text=Нет+фото";

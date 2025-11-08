@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { createBooking } from "../api/api";
 import WebApp from "@twa-dev/sdk";
-import "./BookingForm.css"; // ✅ добавляем стили
+import Loader from "../components/Loader"; // ✅ добавили компонент загрузки
+import "./BookingForm.css";
 
 export default function BookingForm() {
   const { id } = useParams();
-
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({
     clientName: "",
     phone: "",
@@ -16,33 +18,44 @@ export default function BookingForm() {
     childHeight: "",
   });
 
-  const [message, setMessage] = useState("");
-
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
+    if (loading) return; // защита от повторного нажатия
+
+    // простая валидация
+    if (!form.clientName || !form.phone || !form.size) {
+      WebApp.showAlert("⚠️ Заполните обязательные поля!");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       await createBooking({
         userTgId: WebApp.initDataUnsafe?.user?.id || 0,
         costumeId: id,
         ...form,
       });
-      setMessage("✅ Заявка успешно отправлена!");
-      setForm({
-        clientName: "",
-        phone: "",
-        size: "",
-        childName: "",
-        childAge: "",
-        childHeight: "",
-      });
+
+      setSuccess(true);
+      WebApp.showAlert("✅ Заявка успешно отправлена!");
+
+      // закрываем форму через 1 секунду
+      setTimeout(() => {
+        WebApp.close();
+      }, 1000);
     } catch (err) {
       console.error(err);
-      setMessage("❌ Ошибка при отправке. Попробуйте снова.");
+      WebApp.showAlert("❌ Ошибка при отправке. Попробуйте снова.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) return <Loader text="Отправляем заявку..." />; // ✅ лоадер на весь экран
 
   return (
     <div className="booking-wrapper">
@@ -73,7 +86,7 @@ export default function BookingForm() {
           Отправить заявку
         </button>
 
-        {message && <p className="form-message">{message}</p>}
+        {success && <p className="form-message success">✅ Заявка отправлена!</p>}
       </div>
     </div>
   );

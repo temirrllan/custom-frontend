@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { getAdminCostumes, deleteCostume } from "../api/admin";
 import AdminCostumeForm from "../components/AdminCostumeForm";
 import AdminCostumeCard from "../components/AdminCostumeCard";
+import Loader from "../components/Loader";
 
 import "./AdminPanel.css";
 
 export default function AdminPanel() {
   const [costumes, setCostumes] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const load = async () => {
     const data = await getAdminCostumes();
@@ -24,6 +26,7 @@ export default function AdminPanel() {
       await load();
     }
   };
+if (loading) return <Loader text="Загрузка панели..." />;
 
   return (
     <div className="admin-panel">

@@ -7,6 +7,7 @@ import BookingForm from "./pages/BookingForm";
 import { getUserInfo } from "./api/api"; // создадим, см. ниже
 import AdminPanel from "./pages/AdminPanel.js";
 import { useEffect, useState } from "react";
+import Loader from "./components/Loader";
 
 
 
@@ -43,7 +44,7 @@ export default function App() {
     init();
   }, []);
 
-  if (loading) return <p style={{ textAlign: "center", marginTop: 50 }}>Загрузка...</p>;
+if (isAdmin === null) return <Loader text="Загрузка приложения..." />;
 
   return (
     <BrowserRouter>
