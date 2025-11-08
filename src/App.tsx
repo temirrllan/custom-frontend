@@ -44,8 +44,10 @@ export default function App() {
     init();
   }, []);
 
-if (isAdmin === null) return <Loader text="Загрузка приложения..." />;
-
+// ✅ Показываем загрузку, пока идёт инициализация
+  if (loading) {
+    return <Loader text="Загрузка приложения..." />;
+  }
   return (
     <BrowserRouter>
       {isAdmin ? (
