@@ -93,8 +93,8 @@
   width: 100%;
   height: 350px;
   overflow: hidden;
-  background: var(--tg-theme-bg-color, #f5f5f5);
-  touch-action: pan-y pinch-zoom;
+  background: #1a1a1a;
+  touch-action: pan-x;
   margin: 0;
   border: none;
 }
@@ -105,6 +105,9 @@
   height: 100%;
   width: 100%;
   will-change: transform;
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 .slide-wrapper {
@@ -112,11 +115,10 @@
   width: 100%;
   height: 100%;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   overflow: hidden;
   position: relative;
+  background: #1a1a1a;
 }
 
 .slide-image {
@@ -125,28 +127,26 @@
   object-fit: cover;
   object-position: center;
   display: block;
-  max-width: 100%;
-  max-height: 100%;
   user-select: none;
   -webkit-user-drag: none;
-  pointer-events: none;
+  background: #1a1a1a;
 }
 
 .no-photo {
   width: 100%;
   height: 350px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--tg-theme-bg-color, #f5f5f5);
+  display: block;
+  background: #1a1a1a;
   overflow: hidden;
   margin: 0;
+  position: relative;
 }
 
 .costume-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
@@ -254,17 +254,18 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #fff;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
   font-weight: 600;
-  z-index: 10;
+  z-index: 15;
   pointer-events: none;
   user-select: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* === Информация === */

@@ -21,8 +21,14 @@ export default function CostumeDetails() {
   // Формируем полные URL для фото
   const toFullUrl = (path?: string) => {
     if (!path) return "https://via.placeholder.com/600x400?text=Нет+фото";
-    if (path.startsWith("http")) return path;
-    return `${API_BASE}${path}`;
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      return path;
+    }
+    // Если путь уже начинается с /, используем как есть, иначе добавляем /
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    // Убираем trailing slash из API_BASE если есть
+    const base = API_BASE.endsWith("/") ? API_BASE.slice(0, -1) : API_BASE;
+    return `${base}${cleanPath}`;
   };
 
   if (!costume) return <p className="loading-text">Загрузка костюма...</p>;
@@ -30,6 +36,14 @@ export default function CostumeDetails() {
   const photos = costume.photos?.length 
     ? costume.photos.map((p: string) => toFullUrl(p))
     : [];
+
+  // Отладочная информация
+  useEffect(() => {
+    if (costume && photos.length > 0) {
+      console.log("Costume photos:", photos);
+      console.log("API_BASE:", API_BASE);
+    }
+  }, [costume, photos]);
 
   const prevSlide = () => {
     setCurrentIndex((prev) =>
@@ -97,8 +111,13 @@ export default function CostumeDetails() {
                     alt={`${costume.title} ${idx + 1}`}
                     className="slide-image"
                     onError={(e) => {
+                      console.error("Ошибка загрузки изображения:", url);
                       const target = e.target as HTMLImageElement;
                       target.src = "https://via.placeholder.com/600x400?text=Ошибка+загрузки";
+                      target.onerror = null; // Предотвращаем бесконечный цикл
+                    }}
+                    onLoad={() => {
+                      console.log("Изображение загружено:", url);
                     }}
                     loading={idx === 0 ? "eager" : "lazy"}
                   />
@@ -136,11 +155,13 @@ export default function CostumeDetails() {
                     />
                   ))}
                 </div>
-
-                <div className="slide-counter">
-                  {currentIndex + 1} / {photos.length}
-                </div>
               </>
+            )}
+
+            {photos.length > 0 && (
+              <div className="slide-counter">
+                {currentIndex + 1} / {photos.length}
+              </div>
             )}
           </div>
         ) : (
