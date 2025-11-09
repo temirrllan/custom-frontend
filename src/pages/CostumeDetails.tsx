@@ -21,14 +21,8 @@ export default function CostumeDetails() {
   // Формируем полные URL для фото
   const toFullUrl = (path?: string) => {
     if (!path) return "https://via.placeholder.com/600x400?text=Нет+фото";
-    if (path.startsWith("http://") || path.startsWith("https://")) {
-      return path;
-    }
-    // Если путь уже начинается с /, используем как есть, иначе добавляем /
-    const cleanPath = path.startsWith("/") ? path : `/${path}`;
-    // Убираем trailing slash из API_BASE если есть
-    const base = API_BASE.endsWith("/") ? API_BASE.slice(0, -1) : API_BASE;
-    return `${base}${cleanPath}`;
+    if (path.startsWith("http")) return path;
+    return `${API_BASE}${path}`;
   };
 
   if (!costume) return <p className="loading-text">Загрузка костюма...</p>;
@@ -36,14 +30,6 @@ export default function CostumeDetails() {
   const photos = costume.photos?.length 
     ? costume.photos.map((p: string) => toFullUrl(p))
     : [];
-
-  // Отладочная информация
-  useEffect(() => {
-    if (costume && photos.length > 0) {
-      console.log("Costume photos:", photos);
-      console.log("API_BASE:", API_BASE);
-    }
-  }, [costume, photos]);
 
   const prevSlide = () => {
     setCurrentIndex((prev) =>
@@ -111,13 +97,8 @@ export default function CostumeDetails() {
                     alt={`${costume.title} ${idx + 1}`}
                     className="slide-image"
                     onError={(e) => {
-                      console.error("Ошибка загрузки изображения:", url);
                       const target = e.target as HTMLImageElement;
                       target.src = "https://via.placeholder.com/600x400?text=Ошибка+загрузки";
-                      target.onerror = null; // Предотвращаем бесконечный цикл
-                    }}
-                    onLoad={() => {
-                      console.log("Изображение загружено:", url);
                     }}
                     loading={idx === 0 ? "eager" : "lazy"}
                   />
@@ -131,7 +112,6 @@ export default function CostumeDetails() {
                   className="nav-btn left" 
                   onClick={prevSlide}
                   aria-label="Предыдущее фото"
-                  type="button"
                 >
                   ‹
                 </button>
@@ -139,7 +119,6 @@ export default function CostumeDetails() {
                   className="nav-btn right" 
                   onClick={nextSlide}
                   aria-label="Следующее фото"
-                  type="button"
                 >
                   ›
                 </button>
@@ -151,17 +130,14 @@ export default function CostumeDetails() {
                       className={`dot ${i === currentIndex ? "active" : ""}`}
                       onClick={() => setCurrentIndex(i)}
                       aria-label={`Перейти к фото ${i + 1}`}
-                      type="button"
                     />
                   ))}
                 </div>
-              </>
-            )}
 
-            {photos.length > 0 && (
-              <div className="slide-counter">
-                {currentIndex + 1} / {photos.length}
-              </div>
+                <div className="slide-counter">
+                  {currentIndex + 1} / {photos.length}
+                </div>
+              </>
             )}
           </div>
         ) : (
@@ -175,34 +151,30 @@ export default function CostumeDetails() {
         )}
 
         <div className="info">
+          <h2>{costume.title}</h2>
+          <p className="desc">
+            {costume.description || "Описание отсутствует"}
+          </p>
+
           <div className="price-block">
             <span className="price">{costume.price} ₽</span>
             <span className="label">за аренду</span>
           </div>
 
-          {costume.description && (
-            <p className="desc">
-              {costume.description}
-            </p>
-          )}
-
           <div className="details-section">
             {costume.sizes?.length > 0 && (
               <p>
-                <strong>Размеры:</strong> 
-                <span>{costume.sizes.join(", ")}</span>
+                <strong>Размеры:</strong> {costume.sizes.join(", ")}
               </p>
             )}
             {costume.heightRange && (
               <p>
-                <strong>Рост:</strong> 
-                <span>{costume.heightRange}</span>
+                <strong>Рост:</strong> {costume.heightRange}
               </p>
             )}
             {costume.notes && (
               <p>
-                <strong>Примечание:</strong> 
-                <span>{costume.notes}</span>
+                <strong>Примечание:</strong> {costume.notes}
               </p>
             )}
           </div>
@@ -212,7 +184,6 @@ export default function CostumeDetails() {
       <button
         className="main-btn"
         onClick={() => navigate(`/book/${costume._id}`)}
-        type="button"
       >
         Забронировать
       </button>
