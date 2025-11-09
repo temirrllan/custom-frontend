@@ -38,15 +38,6 @@ export default function CostumeDetails() {
 
         <div className="info">
           <h2>{costume.title}</h2>
-          <p className="desc">
-            {costume.description || "Описание отсутствует"}
-          </p>
-
-          <div className="price-block">
-            <span className="price">{costume.price} ₽</span>
-            <span className="label">за аренду</span>
-          </div>
-
           <div className="details-section">
             {costume.sizes?.length > 0 && (
               <p>
@@ -64,6 +55,13 @@ export default function CostumeDetails() {
               </p>
             )}
           </div>
+
+          <div className="price-block">
+            <span className="price">{costume.price} ₽</span>
+            <span className="label">за аренду</span>
+          </div>
+
+          
         </div>
       </div>
 
