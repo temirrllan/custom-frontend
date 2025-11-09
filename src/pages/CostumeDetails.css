@@ -137,6 +137,20 @@
   font-weight: 400;
 }
 
+/* 🧾 Блок подробностей (размер, рост, примечание) */
+.details-section {
+  border-top: 1px solid var(--tg-theme-bg-color, #e5e5ea);
+  margin-top: 10px;
+  padding-top: 12px;
+  font-size: 15px;
+  color: var(--tg-theme-text-color, #1c1c1e);
+  line-height: 1.5;
+}
+
+.details-section p {
+  margin: 4px 0;
+}
+
 .main-btn {
   margin-top: 8px;
   width: 100%;
@@ -173,7 +187,7 @@
   animation: fadeIn 0.5s ease-out;
 }
 
-/* Адаптивность для планшетов */
+/* --- адаптив --- */
 @media (min-width: 640px) {
   .page-container {
     padding: 24px;
@@ -198,7 +212,6 @@
   }
 }
 
-/* Адаптивность для маленьких экранов */
 @media (max-width: 360px) {
   .page-container {
     padding: 10px;
@@ -226,7 +239,6 @@
   }
 }
 
-/* Поддержка landscape режима */
 @media (orientation: landscape) and (max-height: 500px) {
   .costume-image {
     height: 200px;

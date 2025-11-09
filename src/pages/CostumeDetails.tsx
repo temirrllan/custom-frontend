@@ -28,18 +28,41 @@ export default function CostumeDetails() {
 
       <div className="card">
         <img
-          src={costume.photos?.[0] || "https://via.placeholder.com/600x400?text=Нет+фото"}
+          src={
+            costume.photos?.[0] ||
+            "https://via.placeholder.com/600x400?text=Нет+фото"
+          }
           alt={costume.title}
           className="costume-image"
         />
 
         <div className="info">
           <h2>{costume.title}</h2>
-          <p className="desc">{costume.description || "Описание отсутствует"}</p>
+          <p className="desc">
+            {costume.description || "Описание отсутствует"}
+          </p>
 
           <div className="price-block">
             <span className="price">{costume.price} ₽</span>
             <span className="label">за аренду</span>
+          </div>
+
+          <div className="details-section">
+            {costume.sizes?.length > 0 && (
+              <p>
+                <strong>Размеры:</strong> {costume.sizes.join(", ")}
+              </p>
+            )}
+            {costume.heightRange && (
+              <p>
+                <strong>Рост:</strong> {costume.heightRange}
+              </p>
+            )}
+            {costume.notes && (
+              <p>
+                <strong>Примечание:</strong> {costume.notes}
+              </p>
+            )}
           </div>
         </div>
       </div>
