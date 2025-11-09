@@ -112,6 +112,7 @@ export default function CostumeDetails() {
                   className="nav-btn left" 
                   onClick={prevSlide}
                   aria-label="Предыдущее фото"
+                  type="button"
                 >
                   ‹
                 </button>
@@ -119,6 +120,7 @@ export default function CostumeDetails() {
                   className="nav-btn right" 
                   onClick={nextSlide}
                   aria-label="Следующее фото"
+                  type="button"
                 >
                   ›
                 </button>
@@ -130,6 +132,7 @@ export default function CostumeDetails() {
                       className={`dot ${i === currentIndex ? "active" : ""}`}
                       onClick={() => setCurrentIndex(i)}
                       aria-label={`Перейти к фото ${i + 1}`}
+                      type="button"
                     />
                   ))}
                 </div>
@@ -151,30 +154,34 @@ export default function CostumeDetails() {
         )}
 
         <div className="info">
-          <h2>{costume.title}</h2>
-          <p className="desc">
-            {costume.description || "Описание отсутствует"}
-          </p>
-
           <div className="price-block">
             <span className="price">{costume.price} ₽</span>
             <span className="label">за аренду</span>
           </div>
 
+          {costume.description && (
+            <p className="desc">
+              {costume.description}
+            </p>
+          )}
+
           <div className="details-section">
             {costume.sizes?.length > 0 && (
               <p>
-                <strong>Размеры:</strong> {costume.sizes.join(", ")}
+                <strong>Размеры:</strong> 
+                <span>{costume.sizes.join(", ")}</span>
               </p>
             )}
             {costume.heightRange && (
               <p>
-                <strong>Рост:</strong> {costume.heightRange}
+                <strong>Рост:</strong> 
+                <span>{costume.heightRange}</span>
               </p>
             )}
             {costume.notes && (
               <p>
-                <strong>Примечание:</strong> {costume.notes}
+                <strong>Примечание:</strong> 
+                <span>{costume.notes}</span>
               </p>
             )}
           </div>
@@ -184,6 +191,7 @@ export default function CostumeDetails() {
       <button
         className="main-btn"
         onClick={() => navigate(`/book/${costume._id}`)}
+        type="button"
       >
         Забронировать
       </button>

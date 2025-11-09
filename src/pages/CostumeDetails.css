@@ -5,17 +5,19 @@
 /* === Контейнер страницы === */
 .page-container {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-  background: var(--tg-theme-bg-color, #f2f2f7);
-  color: var(--tg-theme-text-color, #1c1c1e);
+  background: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, #000000);
   min-height: 100vh;
-  padding: 12px;
-  padding-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  padding-bottom: 90px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   animation: fadeIn 0.4s ease-out;
-  max-width: 100%;
   overflow-x: hidden;
+  position: relative;
 }
 
 /* === Шапка === */
@@ -23,11 +25,14 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  padding: 12px 16px;
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: var(--tg-theme-bg-color, #f2f2f7);
+  z-index: 100;
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-bottom: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0;
 }
 
 .back-btn {
@@ -71,24 +76,27 @@
 /* === Карточка костюма === */
 .card {
   background: var(--tg-theme-secondary-bg-color, #ffffff);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 /* === Слайдер фото === */
 .slider {
   position: relative;
   width: 100%;
-  height: 280px;
+  height: 350px;
   overflow: hidden;
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
-  background: var(--tg-theme-bg-color, #f2f2f7);
+  background: var(--tg-theme-bg-color, #f5f5f5);
   touch-action: pan-y pinch-zoom;
+  margin: 0;
+  border: none;
 }
 
 .slides {
@@ -114,7 +122,7 @@
 .slide-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   display: block;
   max-width: 100%;
@@ -126,14 +134,13 @@
 
 .no-photo {
   width: 100%;
-  height: 280px;
+  height: 350px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--tg-theme-bg-color, #f2f2f7);
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
+  background: var(--tg-theme-bg-color, #f5f5f5);
   overflow: hidden;
+  margin: 0;
 }
 
 .costume-image {
@@ -262,40 +269,31 @@
 
 /* === Информация === */
 .info {
-  padding: 20px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  background: var(--tg-theme-secondary-bg-color, #ffffff);
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
 }
 
 .info h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--tg-theme-text-color, #1c1c1e);
-  line-height: 1.3;
-  letter-spacing: -0.5px;
+  color: var(--tg-theme-text-color, #000000);
+  line-height: 1.4;
+  letter-spacing: -0.3px;
 }
 
 .desc {
-  font-size: 16px;
-  color: var(--tg-theme-hint-color, #8e8e93);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* === Блок деталей === */
-.details-section {
-  border-top: 1px solid var(--tg-theme-bg-color, #e5e5ea);
-  margin-top: 10px;
-  padding-top: 12px;
   font-size: 15px;
-  color: var(--tg-theme-text-color, #1c1c1e);
-  line-height: 1.5;
-}
-
-.details-section p {
-  margin: 4px 0;
+  color: var(--tg-theme-hint-color, #666666);
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* === Цена === */
@@ -303,9 +301,41 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-top: 4px;
-  padding-top: 16px;
-  border-top: 1px solid var(--tg-theme-bg-color, #e5e5ea);
+  padding: 16px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin: 0;
+}
+
+/* === Блок деталей === */
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  font-size: 15px;
+  color: var(--tg-theme-text-color, #000000);
+  line-height: 1.6;
+}
+
+.details-section p {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.details-section strong {
+  font-weight: 600;
+  color: var(--tg-theme-text-color, #000000);
+  display: inline-block;
+  min-width: 90px;
+  margin-right: 8px;
+}
+
+.details-section span {
+  color: var(--tg-theme-text-color, #000000);
+  font-weight: 400;
 }
 
 .price {
@@ -323,31 +353,36 @@
 
 /* === Кнопка бронирования === */
 .main-btn {
-  margin-top: 8px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
   background-color: var(--tg-theme-button-color, #007aff);
   color: var(--tg-theme-button-text-color, #ffffff);
   border: none;
-  border-radius: var(--radius);
+  border-radius: 0;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   -webkit-tap-highlight-color: transparent;
   letter-spacing: -0.2px;
+  z-index: 1000;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .main-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+  opacity: 0.8;
+  transform: scale(0.99);
 }
 
 .main-btn:hover {
-  opacity: 0.95;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 122, 255, 0.35);
+  opacity: 0.9;
 }
 
 /* === Текст загрузки === */
@@ -362,25 +397,29 @@
 /* === Адаптив === */
 @media (min-width: 640px) {
   .page-container {
-    padding: 24px;
-    max-width: 600px;
-    margin: 0 auto;
+    padding-bottom: 90px;
+    max-width: 100%;
+  }
+
+  .header {
+    padding: 16px 24px;
   }
 
   .slider {
-    height: 400px;
+    height: 450px;
   }
 
   .no-photo {
-    height: 400px;
+    height: 450px;
   }
 
   .info {
     padding: 24px;
+    max-width: 100%;
   }
 
   .info h2 {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .price {
@@ -392,23 +431,32 @@
     height: 44px;
     font-size: 28px;
   }
+
+  .main-btn {
+    padding: 18px 24px;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (max-width: 360px) {
   .page-container {
-    padding: 10px;
+    padding-bottom: 80px;
+  }
+
+  .header {
+    padding: 10px 12px;
   }
 
   .slider {
-    height: 240px;
+    height: 280px;
   }
 
   .no-photo {
-    height: 240px;
+    height: 280px;
   }
 
   .info {
-    padding: 16px;
+    padding: 16px 12px;
   }
 
   .info h2 {
@@ -420,7 +468,8 @@
   }
 
   .main-btn {
-    padding: 14px;
+    padding: 14px 12px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
     font-size: 16px;
   }
 
@@ -449,16 +498,19 @@
 
 @media (orientation: landscape) and (max-height: 500px) {
   .slider {
-    height: 200px;
+    height: 250px;
   }
 
   .no-photo {
-    height: 200px;
+    height: 250px;
   }
 
   .header {
-    padding-top: 4px;
-    margin-bottom: 2px;
+    padding: 8px 16px;
+  }
+
+  .info {
+    padding: 16px;
   }
 }
 
