@@ -32,7 +32,7 @@ export default function CostumeDetails() {
   return (
     <div className="page-container">
       <header className="header">
-        <button type="button" className="back-btn" onClick={() => navigate(-1)}>
+        <button className="back-btn" onClick={() => navigate(-1)}>
           ←
         </button>
         <h1 className="page-title">{costume.title}</h1>
@@ -45,32 +45,21 @@ export default function CostumeDetails() {
             alt={costume.title}
             className="costume-image"
           />
-
           {photos.length > 1 && (
             <>
-              <button
-                type="button"
-                className="nav-btn prev"
-                onClick={prevPhoto}
-              >
+              <button className="nav-btn prev" onClick={prevPhoto}>
                 ‹
               </button>
-              <button
-                type="button"
-                className="nav-btn next"
-                onClick={nextPhoto}
-              >
+              <button className="nav-btn next" onClick={nextPhoto}>
                 ›
               </button>
-
               <div className="dots">
                 {photos.map((_: string, i: number) => (
-                  <button
-                    type="button"
+                  <span
                     key={i}
                     className={`dot ${i === photoIndex ? "active" : ""}`}
                     onClick={() => setPhotoIndex(i)}
-                  />
+                  ></span>
                 ))}
               </div>
             </>
@@ -109,7 +98,6 @@ export default function CostumeDetails() {
       </div>
 
       <button
-        type="button"
         className="main-btn"
         onClick={() => navigate(`/book/${costume._id}`)}
       >
