@@ -7,6 +7,7 @@ export default function CostumeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [costume, setCostume] = useState<any>(null);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   useEffect(() => {
     getCostumes().then((all) => {
@@ -14,8 +15,19 @@ export default function CostumeDetails() {
     });
   }, [id]);
 
-  if (!costume)
-    return <p className="loading-text">Загрузка костюма...</p>;
+  if (!costume) return <p className="loading-text">Загрузка костюма...</p>;
+
+  const photos = costume.photos && costume.photos.length > 0
+    ? costume.photos
+    : ["https://via.placeholder.com/600x400?text=Нет+фото"];
+
+  const nextPhoto = () => {
+    setPhotoIndex((prev) => (prev + 1) % photos.length);
+  };
+
+  const prevPhoto = () => {
+    setPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  };
 
   return (
     <div className="page-container">
@@ -27,17 +39,44 @@ export default function CostumeDetails() {
       </header>
 
       <div className="card">
-        <img
-          src={
-            costume.photos?.[0] ||
-            "https://via.placeholder.com/600x400?text=Нет+фото"
-          }
-          alt={costume.title}
-          className="costume-image"
-        />
+        <div className="image-slider">
+          <img
+            src={photos[photoIndex]}
+            alt={costume.title}
+            className="costume-image"
+          />
+          {photos.length > 1 && (
+            <>
+              <button className="nav-btn prev" onClick={prevPhoto}>
+                ‹
+              </button>
+              <button className="nav-btn next" onClick={nextPhoto}>
+                ›
+              </button>
+              <div className="dots">
+                {photos.map((_: string, i: number) => (
+                  <span
+                    key={i}
+                    className={`dot ${i === photoIndex ? "active" : ""}`}
+                    onClick={() => setPhotoIndex(i)}
+                  ></span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
         <div className="info">
           <h2>{costume.title}</h2>
+          <p className="desc">
+            {costume.description || "Описание отсутствует"}
+          </p>
+
+          <div className="price-block">
+            <span className="price">{costume.price} ₽</span>
+            <span className="label">за аренду</span>
+          </div>
+
           <div className="details-section">
             {costume.sizes?.length > 0 && (
               <p>
@@ -55,13 +94,6 @@ export default function CostumeDetails() {
               </p>
             )}
           </div>
-
-          <div className="price-block">
-            <span className="price">{costume.price} ₽</span>
-            <span className="label">за аренду</span>
-          </div>
-
-          
         </div>
       </div>
 
