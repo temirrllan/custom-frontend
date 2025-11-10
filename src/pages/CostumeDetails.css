@@ -133,7 +133,11 @@
 .nav-btn.prev {
   left: 10px;
 }
-
+.nav-btn.container{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
 .nav-btn.next {
   right: 10px;
 }
