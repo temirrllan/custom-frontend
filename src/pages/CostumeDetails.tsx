@@ -47,14 +47,12 @@ export default function CostumeDetails() {
           />
           {photos.length > 1 && (
             <>
-              <div className="nav-btn container">
-                <button className="nav-btn prev" onClick={prevPhoto}>
+              <button className="nav-btn prev" onClick={prevPhoto}>
                 ‹
               </button>
               <button className="nav-btn next" onClick={nextPhoto}>
                 ›
               </button>
-              </div>
               <div className="dots">
                 {photos.map((_: string, i: number) => (
                   <span
