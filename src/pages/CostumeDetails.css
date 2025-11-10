@@ -125,7 +125,10 @@
   justify-content: center;
   transition: background 0.2s;
 }
-
+/* Убираем движение при нажатии */
+.nav-btn:active {
+  transform: translateY(-50%) scale(0.96);
+}
 .nav-btn:hover {
   background: rgba(0, 0, 0, 0.6);
 }
