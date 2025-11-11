@@ -2,30 +2,27 @@ import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "./Catalog.css";
-import { API_BASE } from "../api/admin"; // добавляем импорт
+import { getFullUrl } from "../api/adminApi"; // ✅ теперь используем универсальную функцию
 import Loader from "../components/Loader";
 
 export default function Catalog() {
   const [costumes, setCostumes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
- const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getCostumes()
+      .then((data) => {
+        // Фильтруем только доступные костюмы
+        const available = data.filter((c: any) => c.available !== false);
+        setCostumes(available);
+      })
+      .catch((err) => console.error("Ошибка загрузки каталога:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
-useEffect(() => {
-  getCostumes()
-    .then(setCostumes)
-    .catch((err) => console.error("Ошибка загрузки каталога:", err))
-    .finally(() => setLoading(false));
-}, []);
+  if (loading) return <Loader text="Загружаем костюмы..." />;
 
-if (loading) return <Loader text="Загружаем костюмы..." />;
-
- // вспомогательная функция — формирует полный URL к фото
-  function toFullUrl(path?: string) {
-    if (!path) return "https://via.placeholder.com/400x300?text=Нет+фото";
-    if (path.startsWith("http")) return path;
-    return `${API_BASE}${path}`;
-  }
   return (
     <div className="catalog-page">
       <header className="catalog-header">
@@ -45,10 +42,14 @@ if (loading) return <Loader text="Загружаем костюмы..." />;
             >
               <div className="image-wrapper">
                 <img
-                  src={toFullUrl(c.photos?.[0])} // ✅ теперь всегда работает
+                  src={getFullUrl(c.photos?.[0])} // ✅ стабильный абсолютный путь
                   alt={c.title}
                   className="costume-img"
                   loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://via.placeholder.com/400x300?text=Нет+фото";
+                  }}
                 />
               </div>
               <div className="costume-info">

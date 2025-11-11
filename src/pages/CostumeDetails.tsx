@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
+import { API_BASE } from "../api/adminApi"; // ✅ добавляем для стабильных ссылок
 import "./CostumeDetails.css";
 
 export default function CostumeDetails() {
@@ -11,15 +12,20 @@ export default function CostumeDetails() {
 
   useEffect(() => {
     getCostumes().then((all) => {
-      setCostume(all.find((c: any) => c._id === id));
+      const found = all.find((c: any) => c._id === id);
+      setCostume(found);
     });
   }, [id]);
 
   if (!costume) return <p className="loading-text">Загрузка костюма...</p>;
 
-  const photos = costume.photos && costume.photos.length > 0
-    ? costume.photos
-    : ["https://via.placeholder.com/600x400?text=Нет+фото"];
+  // ✅ Преобразуем относительные пути в абсолютные
+  const photos =
+    costume.photos && costume.photos.length > 0
+      ? costume.photos.map((p: string) =>
+          p.startsWith("http") ? p : `${API_BASE}${p.startsWith("/") ? p : "/" + p}`
+        )
+      : ["https://via.placeholder.com/600x400?text=Нет+фото"];
 
   const nextPhoto = () => {
     setPhotoIndex((prev) => (prev + 1) % photos.length);
@@ -44,6 +50,11 @@ export default function CostumeDetails() {
             src={photos[photoIndex]}
             alt={costume.title}
             className="costume-image"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.src =
+                "https://via.placeholder.com/600x400?text=Нет+фото";
+            }}
           />
           {photos.length > 1 && (
             <>
