@@ -91,6 +91,7 @@
 .card:hover .costume-image {
   transform: scale(1.02);
 }
+
 /* 🖼️ Слайдер */
 .image-slider {
   position: relative;
@@ -100,44 +101,41 @@
   border-top-right-radius: var(--radius);
 }
 
-.costume-image {
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  background: var(--tg-theme-bg-color, #f2f2f7);
-  transition: transform 0.3s ease;
-}
-
+/* 🔧 ИСПРАВЛЕНИЕ: Кнопки навигации больше НЕ двигаются */
 .nav-btn {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
   border: none;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease;
+  transition: background 0.2s ease;
   z-index: 5;
-  outline: none !important;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-}
-/* Убираем движение при нажатии */
-.nav-btn:focus,
-.nav-btn:active {
-  outline: none !important;
-  box-shadow: none !important;
+  /* ✅ ГЛАВНОЕ: фиксируем позицию при любых состояниях */
   transform: translateY(-50%) !important;
 }
+
 .nav-btn:hover {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.nav-btn:active {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ✅ Убираем любые изменения при фокусе */
+.nav-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .nav-btn.prev {
@@ -147,10 +145,12 @@
 .nav-btn.next {
   right: 10px;
 }
-/* чтобы при тапе на телефоне не менялся размер/позиция */
+
+/* Блокируем взаимодействие с содержимым кнопки */
 .nav-btn * {
   pointer-events: none;
 }
+
 .dots {
   display: flex;
   justify-content: center;
@@ -158,6 +158,7 @@
   position: absolute;
   bottom: 10px;
   width: 100%;
+  z-index: 3;
 }
 
 .dot {
@@ -172,6 +173,7 @@
 .dot.active {
   background: rgba(255, 255, 255, 1);
 }
+
 .info {
   padding: 20px;
   display: flex;
@@ -217,7 +219,7 @@
   font-weight: 400;
 }
 
-/* 🧾 Блок подробностей (размер, рост, примечание) */
+/* 🧾 Блок подробностей */
 .details-section {
   border-top: 1px solid var(--tg-theme-bg-color, #e5e5ea);
   margin-top: 10px;
@@ -267,7 +269,7 @@
   animation: fadeIn 0.5s ease-out;
 }
 
-/* --- адаптив --- */
+/* Адаптивность для планшетов */
 @media (min-width: 640px) {
   .page-container {
     padding: 24px;
@@ -292,6 +294,7 @@
   }
 }
 
+/* Адаптивность для маленьких экранов */
 @media (max-width: 360px) {
   .page-container {
     padding: 10px;
@@ -317,8 +320,15 @@
     padding: 14px;
     font-size: 16px;
   }
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
 }
 
+/* Landscape режим */
 @media (orientation: landscape) and (max-height: 500px) {
   .costume-image {
     height: 200px;
