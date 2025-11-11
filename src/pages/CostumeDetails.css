@@ -123,11 +123,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.2s ease;
+  z-index: 5;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; /* для мобильных */
 }
 /* Убираем движение при нажатии */
 .nav-btn:active {
-  transform: translateY(-50%);
+  transform: translateY(-50%) !important;
+  background: rgba(0, 0, 0, 0.55);
 }
 .nav-btn:hover {
   background: rgba(0, 0, 0, 0.6);
