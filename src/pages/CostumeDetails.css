@@ -123,16 +123,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
+  transition: background 0.15s ease;
   z-index: 5;
-  outline: none;
+  outline: none !important;
   user-select: none;
-  -webkit-tap-highlight-color: transparent; /* для мобильных */
+  -webkit-tap-highlight-color: transparent;
 }
 /* Убираем движение при нажатии */
+.nav-btn:focus,
 .nav-btn:active {
+  outline: none !important;
+  box-shadow: none !important;
   transform: translateY(-50%) !important;
-  background: rgba(0, 0, 0, 0.55);
 }
 .nav-btn:hover {
   background: rgba(0, 0, 0, 0.6);
@@ -145,7 +147,10 @@
 .nav-btn.next {
   right: 10px;
 }
-
+/* чтобы при тапе на телефоне не менялся размер/позиция */
+.nav-btn * {
+  pointer-events: none;
+}
 .dots {
   display: flex;
   justify-content: center;
