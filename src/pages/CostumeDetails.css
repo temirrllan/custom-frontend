@@ -127,7 +127,7 @@
 }
 /* Убираем движение при нажатии */
 .nav-btn:active {
-  transform: translateY(-50%) scale(0.96);
+  transform: translateY(-50%);
 }
 .nav-btn:hover {
   background: rgba(0, 0, 0, 0.6);
