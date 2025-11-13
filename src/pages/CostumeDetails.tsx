@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
-import { API_BASE } from "../api/adminApi"; // ✅ добавляем для стабильных ссылок
+import { API_BASE } from "../api/adminApi";
 import "./CostumeDetails.css";
 
 export default function CostumeDetails() {
@@ -19,7 +19,6 @@ export default function CostumeDetails() {
 
   if (!costume) return <p className="loading-text">Загрузка костюма...</p>;
 
-  // ✅ Преобразуем относительные пути в абсолютные
   const photos =
     costume.photos && costume.photos.length > 0
       ? costume.photos.map((p: string) =>
@@ -34,6 +33,11 @@ export default function CostumeDetails() {
   const prevPhoto = () => {
     setPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
   };
+
+  // 🆕 Проверяем доступность размеров
+  const stockBySize = costume.stockBySize || {};
+  const availableSizes = costume.sizes?.filter((size: string) => (stockBySize[size] || 0) > 0) || [];
+  const unavailableSizes = costume.sizes?.filter((size: string) => (stockBySize[size] || 0) === 0) || [];
 
   return (
     <div className="page-container">
@@ -52,8 +56,7 @@ export default function CostumeDetails() {
             className="costume-image"
             loading="lazy"
             onError={(e) => {
-              e.currentTarget.src =
-                "https://via.placeholder.com/600x400?text=Нет+фото";
+              e.currentTarget.src = "https://via.placeholder.com/600x400?text=Нет+фото";
             }}
           />
           {photos.length > 1 && (
@@ -79,9 +82,7 @@ export default function CostumeDetails() {
 
         <div className="info">
           <h2>{costume.title}</h2>
-          <p className="desc">
-            {costume.description || "Описание отсутствует"}
-          </p>
+          <p className="desc">{costume.description || "Описание отсутствует"}</p>
 
           <div className="price-block">
             <span className="price">{costume.price} ₽</span>
@@ -89,18 +90,58 @@ export default function CostumeDetails() {
           </div>
 
           <div className="details-section">
+            {/* 🆕 Показываем доступные и недоступные размеры */}
             {costume.sizes?.length > 0 && (
-              <p>
-                <strong>Размеры:</strong> {costume.sizes.join(", ")}
-              </p>
+              <div>
+                <strong>Размеры:</strong>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
+                  {availableSizes.map((size: string) => (
+                    <span
+                      key={size}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "8px",
+                        background: "#34c759",
+                        color: "#fff",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      ✓ {size}
+                    </span>
+                  ))}
+                  {unavailableSizes.map((size: string) => (
+                    <span
+                      key={size}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "8px",
+                        background: "#ff3b30",
+                        color: "#fff",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        opacity: 0.6,
+                      }}
+                    >
+                      ✗ {size}
+                    </span>
+                  ))}
+                </div>
+                {unavailableSizes.length > 0 && (
+                  <p style={{ fontSize: "13px", color: "#ff3b30", marginTop: "8px" }}>
+                    ⚠️ Размеры с ✗ временно недоступны
+                  </p>
+                )}
+              </div>
             )}
+
             {costume.heightRange && (
-              <p>
+              <p style={{ marginTop: "12px" }}>
                 <strong>Рост:</strong> {costume.heightRange}
               </p>
             )}
             {costume.notes && (
-              <p>
+              <p style={{ marginTop: "12px" }}>
                 <strong>Примечание:</strong> {costume.notes}
               </p>
             )}
@@ -108,12 +149,15 @@ export default function CostumeDetails() {
         </div>
       </div>
 
-      <button
-        className="main-btn"
-        onClick={() => navigate(`/book/${costume._id}`)}
-      >
-        Забронировать
-      </button>
+      {availableSizes.length > 0 ? (
+        <button className="main-btn" onClick={() => navigate(`/book/${costume._id}`)}>
+          Забронировать
+        </button>
+      ) : (
+        <button className="main-btn" disabled style={{ opacity: 0.5, cursor: "not-allowed" }}>
+          ❌ Все размеры недоступны
+        </button>
+      )}
     </div>
   );
 }

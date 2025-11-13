@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { createBooking } from "../api/api";
+import { createBooking, getCostumes } from "../api/api";
 import WebApp from "@twa-dev/sdk";
-import Loader from "../components/Loader"; // ✅ добавили компонент загрузки
+import Loader from "../components/Loader";
 import "./BookingForm.css";
 
 export default function BookingForm() {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [costume, setCostume] = useState<any>(null);
   const [form, setForm] = useState({
     clientName: "",
     phone: "",
@@ -18,14 +19,21 @@ export default function BookingForm() {
     childHeight: "",
   });
 
+  // 🆕 Загружаем данные костюма, чтобы узнать доступные размеры
+  useEffect(() => {
+    getCostumes().then((all) => {
+      const found = all.find((c: any) => c._id === id);
+      setCostume(found);
+    });
+  }, [id]);
+
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
-    if (loading) return; // защита от повторного нажатия
+    if (loading) return;
 
-    // простая валидация
     if (!form.clientName || !form.phone || !form.size) {
       WebApp.showAlert("⚠️ Заполните обязательные поля!");
       return;
@@ -43,46 +51,93 @@ export default function BookingForm() {
       setSuccess(true);
       WebApp.showAlert("✅ Заявка успешно отправлена!");
 
-      // закрываем форму через 1 секунду
       setTimeout(() => {
         WebApp.close();
       }, 1000);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      WebApp.showAlert("❌ Ошибка при отправке. Попробуйте снова.");
+      const errorMsg = err.response?.data?.error || "Ошибка при отправке. Попробуйте снова.";
+      WebApp.showAlert(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <Loader text="Отправляем заявку..." />; // ✅ лоадер на весь экран
+  if (loading) return <Loader text="Отправляем заявку..." />;
+  if (!costume) return <Loader text="Загрузка данных..." />;
+
+  // 🆕 Фильтруем только доступные размеры
+  const stockBySize = costume.stockBySize || {};
+  const availableSizes = costume.sizes?.filter((size: string) => (stockBySize[size] || 0) > 0) || [];
 
   return (
     <div className="booking-wrapper">
       <h2 className="booking-title">Бронирование костюма</h2>
 
       <div className="booking-form">
-        {[
-          { name: "clientName", label: "Ваше имя" },
-          { name: "phone", label: "Телефон" },
-          { name: "size", label: "Размер" },
-          { name: "childName", label: "Имя ребёнка" },
-          { name: "childAge", label: "Возраст ребёнка" },
-          { name: "childHeight", label: "Рост ребёнка (см)" },
-        ].map((field) => (
-          <div key={field.name} className="input-group">
-            <input
-              name={field.name}
-              placeholder=" "
-              value={(form as any)[field.name]}
-              onChange={handleChange}
-              required
-            />
-            <label>{field.label}</label>
-          </div>
-        ))}
+        {/* Имя клиента */}
+        <div className="input-group">
+          <input name="clientName" placeholder=" " value={form.clientName} onChange={handleChange} required />
+          <label>Ваше имя *</label>
+        </div>
 
-        <button className="submit-btn" onClick={handleSubmit}>
+        {/* Телефон */}
+        <div className="input-group">
+          <input name="phone" placeholder=" " value={form.phone} onChange={handleChange} required />
+          <label>Телефон *</label>
+        </div>
+
+        {/* 🆕 Размер (только доступные) */}
+        <div className="input-group">
+          <select
+            name="size"
+            value={form.size}
+            onChange={handleChange}
+            required
+            style={{
+              padding: "16px 14px",
+              fontSize: "16px",
+              borderRadius: "14px",
+              border: "2px solid transparent",
+              background: "var(--tg-theme-bg-color, #f2f2f7)",
+              color: "var(--tg-theme-text-color, #1c1c1e)",
+              width: "100%",
+            }}
+          >
+            <option value="">Выберите размер *</option>
+            {availableSizes.map((size: string) => (
+              <option key={size} value={size}>
+                {size} (в наличии: {stockBySize[size]} шт.)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {availableSizes.length === 0 && (
+          <p style={{ color: "#ff3b30", fontSize: "14px", textAlign: "center" }}>
+            ❌ Все размеры закончились
+          </p>
+        )}
+
+        {/* Имя ребёнка */}
+        <div className="input-group">
+          <input name="childName" placeholder=" " value={form.childName} onChange={handleChange} />
+          <label>Имя ребёнка</label>
+        </div>
+
+        {/* Возраст */}
+        <div className="input-group">
+          <input name="childAge" placeholder=" " value={form.childAge} onChange={handleChange} />
+          <label>Возраст ребёнка</label>
+        </div>
+
+        {/* Рост */}
+        <div className="input-group">
+          <input name="childHeight" placeholder=" " value={form.childHeight} onChange={handleChange} />
+          <label>Рост ребёнка (см)</label>
+        </div>
+
+        <button className="submit-btn" onClick={handleSubmit} disabled={availableSizes.length === 0}>
           Отправить заявку
         </button>
 
