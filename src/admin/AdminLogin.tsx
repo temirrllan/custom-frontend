@@ -1,24 +1,21 @@
-// frontend/src/admin/AdminLogin.tsx
-import { useState } from "react";
-import { setAdminToken } from "../api/adminApi";
-import "./admin.css";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import "./admin.css";
 
 export default function AdminLogin() {
-  const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setAdminToken(token);
-    navigate("/admin");
-  };
+  useEffect(() => {
+    navigate("/");
+  }, [navigate]);
 
   return (
     <div className="admin-page">
       <div className="admin-card">
-        <h2>Вход в админ-панель</h2>
-        <input value={token} onChange={(e) => setToken(e.target.value)} placeholder="Введите admin token" />
-        <button onClick={handleLogin}>Войти</button>
+        <h2>Перенаправление...</h2>
+        <p style={{ textAlign: "center", color: "var(--tg-theme-hint-color, #8e8e93)" }}>
+          Вход в админку теперь происходит автоматически через Telegram
+        </p>
       </div>
     </div>
   );
