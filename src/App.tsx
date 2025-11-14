@@ -3,14 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Catalog from "./pages/Catalog";
 import CostumeDetails from "./pages/CostumeDetails";
 import BookingForm from "./pages/BookingForm";
-
-import { getUserInfo } from "./api/api"; // создадим, см. ниже
-import AdminPanel from "./pages/AdminPanel.js";
+import Orders from "./pages/Orders"; // 🆕
+import { getUserInfo } from "./api/api";
+import AdminPanel from "./pages/AdminPanel";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
-
-
-
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -19,7 +16,6 @@ export default function App() {
   useEffect(() => {
     async function init() {
       try {
-        // Telegram WebApp SDK инициализация
         WebApp.ready();
         WebApp.expand();
 
@@ -44,21 +40,20 @@ export default function App() {
     init();
   }, []);
 
-// ✅ Показываем загрузку, пока идёт инициализация
   if (loading) {
     return <Loader text="Загрузка приложения..." />;
   }
+
   return (
     <BrowserRouter>
       {isAdmin ? (
-        // 🔹 Если админ — показываем админ-панель
         <AdminPanel />
       ) : (
-        // 🔹 Если обычный пользователь — каталог + страницы брони
         <Routes>
           <Route path="/" element={<Catalog />} />
           <Route path="/costume/:id" element={<CostumeDetails />} />
           <Route path="/book/:id" element={<BookingForm />} />
+          <Route path="/orders" element={<Orders />} /> {/* 🆕 */}
         </Routes>
       )}
     </BrowserRouter>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "./Catalog.css";
-import { getFullUrl } from "../api/adminApi"; // ✅ теперь используем универсальную функцию
+import { getFullUrl } from "../api/adminApi";
 import Loader from "../components/Loader";
 
 export default function Catalog() {
@@ -13,7 +13,6 @@ export default function Catalog() {
   useEffect(() => {
     getCostumes()
       .then((data) => {
-        // Фильтруем только доступные костюмы
         const available = data.filter((c: any) => c.available !== false);
         setCostumes(available);
       })
@@ -28,6 +27,14 @@ export default function Catalog() {
       <header className="catalog-header">
         <h1 className="catalog-title">🎭 Прокат костюмов</h1>
         <p className="catalog-subtitle">Выберите костюм для бронирования</p>
+        
+        {/* 🆕 Кнопка "Мои заказы" */}
+        <button 
+          className="orders-btn"
+          onClick={() => navigate("/orders")}
+        >
+          📋 Мои заказы
+        </button>
       </header>
 
       {costumes.length === 0 ? (
@@ -42,7 +49,7 @@ export default function Catalog() {
             >
               <div className="image-wrapper">
                 <img
-                  src={getFullUrl(c.photos?.[0])} // ✅ стабильный абсолютный путь
+                  src={getFullUrl(c.photos?.[0])}
                   alt={c.title}
                   className="costume-img"
                   loading="lazy"

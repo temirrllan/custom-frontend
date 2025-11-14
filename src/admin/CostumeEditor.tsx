@@ -26,7 +26,7 @@ export default function CostumeEditor() {
 
   // 🆕 Для добавления размеров
   const [newSize, setNewSize] = useState("");
-  const [newStock, setNewStock] = useState(0);
+  const [newStock, setNewStock] = useState(1);
 
   const toFullUrl = (path: string) => {
     if (!path) return "";
@@ -74,17 +74,18 @@ export default function CostumeEditor() {
 
   // 🆕 Добавить размер с количеством
   const addSize = () => {
-    if (!newSize.trim()) return alert("Введите размер");
-    if (state.sizes.includes(newSize.trim())) return alert("Этот размер уже добавлен");
+    const trimmed = newSize.trim().toUpperCase();
+    if (!trimmed) return alert("Введите размер");
+    if (state.sizes.includes(trimmed)) return alert("Этот размер уже добавлен");
 
     setState({
       ...state,
-      sizes: [...state.sizes, newSize.trim()],
-      stockBySize: { ...state.stockBySize, [newSize.trim()]: newStock },
+      sizes: [...state.sizes, trimmed],
+      stockBySize: { ...state.stockBySize, [trimmed]: Math.max(0, newStock) },
     });
 
     setNewSize("");
-    setNewStock(0);
+    setNewStock(1);
   };
 
   // 🆕 Удалить размер
@@ -147,14 +148,16 @@ export default function CostumeEditor() {
 
   return (
     <div className="admin-card">
-      <h2>{id === "new" ? "Новый костюм" : "Редактировать костюм"}</h2>
+      <h2>{id === "new" ? "➕ Новый костюм" : "✏️ Редактировать костюм"}</h2>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         {/* Название */}
         <div>
-          <label>Название *</label>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            Название костюма *
+          </label>
           <input
-            placeholder="Введите название костюма"
+            placeholder="Например: Платье Золушка"
             value={state.title}
             onChange={(e) => setState({ ...state, title: e.target.value })}
           />
@@ -162,7 +165,9 @@ export default function CostumeEditor() {
 
         {/* Цена */}
         <div>
-          <label>Цена (₽) *</label>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            Цена за аренду (₽) *
+          </label>
           <input
             placeholder="0"
             type="number"
@@ -175,39 +180,62 @@ export default function CostumeEditor() {
 
         {/* 🆕 Размеры + количество */}
         <div>
-          <label>Размеры и количество *</label>
+          <label style={{ display: "block", marginBottom: "12px", fontWeight: "600" }}>
+            📏 Размеры и количество *
+          </label>
           
           {/* Список уже добавленных размеров */}
           {state.sizes.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: "12px", 
+              marginBottom: "16px" 
+            }}>
               {state.sizes.map((size: string) => (
                 <div
                   key={size}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "12px",
-                    padding: "12px",
-                    background: "var(--tg-theme-bg-color, #f2f2f7)",
+                    gap: "8px",
+                    padding: "12px 16px",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     borderRadius: "12px",
+                    color: "#fff",
+                    boxShadow: "0 2px 8px rgba(102, 126, 234, 0.3)",
                   }}
                 >
-                  <span style={{ fontWeight: "600", minWidth: "60px" }}>{size}</span>
+                  <span style={{ fontWeight: "700", fontSize: "18px", minWidth: "50px" }}>
+                    {size}
+                  </span>
                   <input
                     type="number"
                     min="0"
                     value={state.stockBySize?.[size] || 0}
                     onChange={(e) => updateStock(size, Number(e.target.value))}
-                    style={{ width: "80px", padding: "8px" }}
+                    style={{ 
+                      width: "70px", 
+                      padding: "6px 10px",
+                      borderRadius: "8px",
+                      border: "none",
+                      fontWeight: "700",
+                      textAlign: "center"
+                    }}
                   />
-                  <span style={{ fontSize: "14px", color: "var(--tg-theme-hint-color, #8e8e93)" }}>шт.</span>
+                  <span style={{ fontSize: "14px", fontWeight: "500" }}>шт.</span>
                   <button
                     type="button"
                     onClick={() => removeSize(size)}
-                    className="danger"
-                    style={{ marginLeft: "auto" }}
+                    style={{
+                      marginLeft: "auto",
+                      background: "rgba(255, 255, 255, 0.2)",
+                      color: "#fff",
+                      padding: "6px 12px",
+                      fontSize: "13px"
+                    }}
                   >
-                    Удалить
+                    ✕
                   </button>
                 </div>
               ))}
@@ -215,36 +243,62 @@ export default function CostumeEditor() {
           )}
 
           {/* Добавление нового размера */}
-          <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
+          <div style={{ 
+            display: "flex", 
+            gap: "12px", 
+            alignItems: "flex-end",
+            padding: "16px",
+            background: "var(--tg-theme-bg-color, #f2f2f7)",
+            borderRadius: "12px"
+          }}>
             <div style={{ flex: 1 }}>
+              <label style={{ fontSize: "13px", color: "var(--tg-theme-hint-color, #8e8e93)", marginBottom: "4px", display: "block" }}>
+                Размер
+              </label>
               <input
-                placeholder="Размер (например, S или 152)"
+                placeholder="S, M, L или 92, 104, 152"
                 value={newSize}
                 onChange={(e) => setNewSize(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addSize()}
+                style={{ textTransform: "uppercase" }}
               />
             </div>
-            <div style={{ width: "100px" }}>
+            <div style={{ width: "120px" }}>
+              <label style={{ fontSize: "13px", color: "var(--tg-theme-hint-color, #8e8e93)", marginBottom: "4px", display: "block" }}>
+                Количество
+              </label>
               <input
                 type="number"
-                placeholder="Кол-во"
+                placeholder="1"
                 min="0"
                 value={newStock}
                 onChange={(e) => setNewStock(Number(e.target.value))}
               />
             </div>
-            <button type="button" onClick={addSize}>
-              + Добавить
+            <button 
+              type="button" 
+              onClick={addSize}
+              style={{
+                background: "#34c759",
+                padding: "12px 20px",
+                fontSize: "15px"
+              }}
+            >
+              ➕ Добавить
             </button>
           </div>
-          <p className="hint">Размеры могут быть буквенными (S, M, L) или числовыми (92, 104, 152)</p>
+          <p className="hint" style={{ marginTop: "8px" }}>
+            💡 Размеры могут быть буквенными (S, M, L) или числовыми (92, 104, 152)
+          </p>
         </div>
 
         {/* Рост */}
         <div>
-          <label>Рост (например, 110–130 см)</label>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            📐 Рост ребёнка
+          </label>
           <input
-            placeholder="Введите диапазон роста"
+            placeholder="Например: 110–130 см"
             value={state.heightRange || ""}
             onChange={(e) => setState({ ...state, heightRange: e.target.value })}
           />
@@ -252,7 +306,9 @@ export default function CostumeEditor() {
 
         {/* Примечание */}
         <div>
-          <label>Примечание</label>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            📝 Примечание
+          </label>
           <textarea
             placeholder="Добавьте уточнение (например, «Есть шляпа в комплекте»)"
             value={state.notes || ""}
@@ -263,9 +319,11 @@ export default function CostumeEditor() {
 
         {/* Описание */}
         <div>
-          <label>Описание</label>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            📄 Описание костюма
+          </label>
           <textarea
-            placeholder="Введите описание костюма"
+            placeholder="Введите подробное описание"
             value={state.description}
             onChange={(e) => setState({ ...state, description: e.target.value })}
             rows={4}
@@ -273,14 +331,19 @@ export default function CostumeEditor() {
         </div>
 
         {/* Доступность */}
-        <div>
-          <label style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{
+          padding: "16px",
+          background: state.available ? "rgba(52, 199, 89, 0.1)" : "rgba(255, 59, 48, 0.1)",
+          borderRadius: "12px",
+          border: `2px solid ${state.available ? "#34c759" : "#ff3b30"}`
+        }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
             <div
               onClick={() => setState({ ...state, available: !state.available })}
               style={{
                 width: 50,
                 height: 26,
-                background: state.available ? "#4cd964" : "#ccc",
+                background: state.available ? "#34c759" : "#ff3b30",
                 borderRadius: 20,
                 position: "relative",
                 cursor: "pointer",
@@ -300,13 +363,17 @@ export default function CostumeEditor() {
                 }}
               />
             </div>
-            <span>{state.available ? "Доступен пользователям ✅" : "Недоступен ❌"}</span>
+            <span style={{ fontWeight: "600", fontSize: "15px" }}>
+              {state.available ? "✅ Доступен пользователям" : "❌ Недоступен пользователям"}
+            </span>
           </label>
         </div>
 
         {/* Фото */}
         <div>
-          <label>Фотографии (до 5 шт.)</label>
+          <label style={{ display: "block", marginBottom: "12px", fontWeight: "600" }}>
+            📸 Фотографии (до 5 шт.)
+          </label>
 
           {state.photos?.length > 0 && (
             <div className="photo-grid">
@@ -331,14 +398,20 @@ export default function CostumeEditor() {
             </div>
           )}
 
-          <input type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={handleFileChange} />
+          <input 
+            type="file" 
+            multiple 
+            accept="image/png,image/jpeg,image/webp" 
+            onChange={handleFileChange}
+            style={{ marginTop: "12px" }}
+          />
           <p className="hint">До 5 фото (JPG, PNG, WebP, ≤ 5 МБ каждое)</p>
         </div>
 
         {/* Кнопки */}
-        <div className="actions">
-          <button onClick={save} disabled={saving}>
-            {saving ? "Сохранение..." : "💾 Сохранить"}
+        <div className="actions" style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+          <button onClick={save} disabled={saving} style={{ flex: 1 }}>
+            {saving ? "Сохранение..." : "💾 Сохранить костюм"}
           </button>
           <button className="secondary" onClick={() => nav("/costumes")}>
             Отмена
