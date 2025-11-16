@@ -81,7 +81,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 3px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   width: 100%;
   box-sizing: border-box;
   align-items: start;
@@ -112,9 +112,8 @@
   cursor: default;
   aspect-ratio: unset;
   min-height: 0;
-  height: 0;
+  height: auto;
   padding: 0;
-  overflow: hidden;
 }
 
 .calendar-day:not(.empty):not(.booked):not(.past):hover {
