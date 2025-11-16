@@ -84,6 +84,7 @@
   margin-bottom: 16px;
   width: 100%;
   box-sizing: border-box;
+  align-items: start;
 }
 
 .calendar-day {
@@ -109,6 +110,11 @@
 .calendar-day.empty {
   background: transparent;
   cursor: default;
+  aspect-ratio: unset;
+  min-height: 0;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .calendar-day:not(.empty):not(.booked):not(.past):hover {
