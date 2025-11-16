@@ -1,31 +1,49 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { createBooking, getCostumes } from "../api/api";
 import WebApp from "@twa-dev/sdk";
 import Loader from "../components/Loader";
+import BookingCalendar from "../components/BookingCalendar";
 import "./BookingForm.css";
 
 export default function BookingForm() {
   const { id } = useParams();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [costume, setCostume] = useState<any>(null);
+  
+  // 🆕 Получаем selectedDate и selectedSize из navigate state
+  const [selectedDate, setSelectedDate] = useState<string>(
+    (location.state as any)?.selectedDate || ""
+  );
+  const [selectedSize, setSelectedSize] = useState<string>(
+    (location.state as any)?.selectedSize || ""
+  );
+  
   const [form, setForm] = useState({
     clientName: "",
     phone: "",
-    size: "",
     childName: "",
     childAge: "",
     childHeight: "",
   });
 
-  // 🆕 Загружаем данные костюма, чтобы узнать доступные размеры
   useEffect(() => {
     getCostumes().then((all) => {
       const found = all.find((c: any) => c._id === id);
       setCostume(found);
+      
+      // Если размер не выбран, берём первый доступный
+      if (found && !selectedSize) {
+        const stockBySize = found.stockBySize || {};
+        const firstAvailable = found.sizes?.find((s: string) => (stockBySize[s] || 0) > 0);
+        if (firstAvailable) {
+          setSelectedSize(firstAvailable);
+        }
+      }
     });
-  }, [id]);
+  }, [id, selectedSize]);
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,8 +52,13 @@ export default function BookingForm() {
   const handleSubmit = async () => {
     if (loading) return;
 
-    if (!form.clientName || !form.phone || !form.size) {
+    if (!form.clientName || !form.phone || !selectedSize) {
       WebApp.showAlert("⚠️ Заполните обязательные поля!");
+      return;
+    }
+
+    if (!selectedDate) {
+      WebApp.showAlert("⚠️ Пожалуйста, выберите дату бронирования!");
       return;
     }
 
@@ -45,6 +68,8 @@ export default function BookingForm() {
       await createBooking({
         userTgId: WebApp.initDataUnsafe?.user?.id || 0,
         costumeId: id,
+        size: selectedSize,
+        bookingDate: selectedDate, // 🆕 Передаём дату
         ...form,
       });
 
@@ -66,7 +91,6 @@ export default function BookingForm() {
   if (loading) return <Loader text="Отправляем заявку..." />;
   if (!costume) return <Loader text="Загрузка данных..." />;
 
-  // 🆕 Фильтруем только доступные размеры
   const stockBySize = costume.stockBySize || {};
   const availableSizes = costume.sizes?.filter((size: string) => (stockBySize[size] || 0) > 0) || [];
 
@@ -75,6 +99,36 @@ export default function BookingForm() {
       <h2 className="booking-title">Бронирование костюма</h2>
 
       <div className="booking-form">
+        {/* 🆕 Календарь */}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            📅 Дата аренды *
+          </label>
+          <BookingCalendar
+            costumeId={costume._id}
+            size={selectedSize}
+            selectedDate={selectedDate}
+            onDateSelect={setSelectedDate}
+          />
+          {selectedDate && (
+            <p style={{ 
+              marginTop: "12px", 
+              padding: "10px", 
+              background: "rgba(0, 122, 255, 0.1)", 
+              borderRadius: "10px",
+              fontSize: "14px",
+              fontWeight: "600",
+              color: "#007aff"
+            }}>
+              ✓ Выбрана дата: {new Date(selectedDate).toLocaleDateString("ru-RU", { 
+                day: "numeric", 
+                month: "long", 
+                year: "numeric" 
+              })}
+            </p>
+          )}
+        </div>
+
         {/* Имя клиента */}
         <div className="input-group">
           <input name="clientName" placeholder=" " value={form.clientName} onChange={handleChange} required />
@@ -87,30 +141,33 @@ export default function BookingForm() {
           <label>Телефон *</label>
         </div>
 
-        {/* 🆕 Размер (только доступные) */}
-        <div className="input-group">
-          <select
-            name="size"
-            value={form.size}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "16px 14px",
-              fontSize: "16px",
-              borderRadius: "14px",
-              border: "2px solid transparent",
-              background: "var(--tg-theme-bg-color, #f2f2f7)",
-              color: "var(--tg-theme-text-color, #1c1c1e)",
-              width: "100%",
-            }}
-          >
-            <option value="">Выберите размер *</option>
+        {/* 🆕 Размер */}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            Размер *
+          </label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             {availableSizes.map((size: string) => (
-              <option key={size} value={size}>
-                {size} (в наличии: {stockBySize[size]} шт.)
-              </option>
+              <button
+                key={size}
+                type="button"
+                onClick={() => setSelectedSize(size)}
+                style={{
+                  padding: "10px 18px",
+                  borderRadius: "10px",
+                  border: selectedSize === size ? "2px solid #007aff" : "2px solid #e0e0e0",
+                  background: selectedSize === size ? "#007aff" : "#fff",
+                  color: selectedSize === size ? "#fff" : "#1c1c1e",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {size} ({stockBySize[size]} шт.)
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         {availableSizes.length === 0 && (
@@ -137,7 +194,15 @@ export default function BookingForm() {
           <label>Рост ребёнка (см)</label>
         </div>
 
-        <button className="submit-btn" onClick={handleSubmit} disabled={availableSizes.length === 0}>
+        <button 
+          className="submit-btn" 
+          onClick={handleSubmit} 
+          disabled={availableSizes.length === 0 || !selectedDate}
+          style={{
+            opacity: availableSizes.length === 0 || !selectedDate ? 0.5 : 1,
+            cursor: availableSizes.length === 0 || !selectedDate ? "not-allowed" : "pointer",
+          }}
+        >
           Отправить заявку
         </button>
 

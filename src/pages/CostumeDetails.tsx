@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
 import { API_BASE } from "../api/adminApi";
+import BookingCalendar from "../components/BookingCalendar";
 import "./CostumeDetails.css";
 
 export default function CostumeDetails() {
@@ -9,11 +10,22 @@ export default function CostumeDetails() {
   const navigate = useNavigate();
   const [costume, setCostume] = useState<any>(null);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
   useEffect(() => {
     getCostumes().then((all) => {
       const found = all.find((c: any) => c._id === id);
       setCostume(found);
+      
+      // Автоматически выбираем первый доступный размер
+      if (found?.sizes?.length > 0) {
+        const stockBySize = found.stockBySize || {};
+        const firstAvailable = found.sizes.find((s: string) => (stockBySize[s] || 0) > 0);
+        if (firstAvailable) {
+          setSelectedSize(firstAvailable);
+        }
+      }
     });
   }, [id]);
 
@@ -34,10 +46,24 @@ export default function CostumeDetails() {
     setPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
   };
 
-  // 🆕 Проверяем доступность размеров
   const stockBySize = costume.stockBySize || {};
   const availableSizes = costume.sizes?.filter((size: string) => (stockBySize[size] || 0) > 0) || [];
   const unavailableSizes = costume.sizes?.filter((size: string) => (stockBySize[size] || 0) === 0) || [];
+
+  const handleBooking = () => {
+    if (!selectedDate) {
+      alert("⚠️ Пожалуйста, выберите дату бронирования");
+      return;
+    }
+    
+    // Передаём выбранную дату и размер в форму бронирования
+    navigate(`/book/${costume._id}`, { 
+      state: { 
+        selectedDate, 
+        selectedSize: selectedSize || availableSizes[0] 
+      } 
+    });
+  };
 
   return (
     <div className="page-container">
@@ -90,32 +116,36 @@ export default function CostumeDetails() {
           </div>
 
           <div className="details-section">
-            {/* 🆕 Показываем доступные и недоступные размеры */}
+            {/* Размеры */}
             {costume.sizes?.length > 0 && (
               <div>
-                <strong>Размеры:</strong>
+                <strong>Выберите размер:</strong>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
                   {availableSizes.map((size: string) => (
-                    <span
+                    <button
                       key={size}
+                      onClick={() => setSelectedSize(size)}
                       style={{
-                        padding: "6px 12px",
-                        borderRadius: "8px",
-                        background: "#34c759",
-                        color: "#fff",
+                        padding: "8px 16px",
+                        borderRadius: "10px",
+                        border: selectedSize === size ? "2px solid #007aff" : "2px solid #e0e0e0",
+                        background: selectedSize === size ? "#007aff" : "#fff",
+                        color: selectedSize === size ? "#fff" : "#1c1c1e",
                         fontSize: "14px",
                         fontWeight: "600",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
                       }}
                     >
-                      ✓ {size}
-                    </span>
+                      {size}
+                    </button>
                   ))}
                   {unavailableSizes.map((size: string) => (
                     <span
                       key={size}
                       style={{
-                        padding: "6px 12px",
-                        borderRadius: "8px",
+                        padding: "8px 16px",
+                        borderRadius: "10px",
                         background: "#ff3b30",
                         color: "#fff",
                         fontSize: "14px",
@@ -149,9 +179,31 @@ export default function CostumeDetails() {
         </div>
       </div>
 
+      {/* 🆕 Календарь бронирования */}
+      {availableSizes.length > 0 && (
+        <div style={{ marginTop: "16px" }}>
+          <h3 style={{ marginBottom: "12px", fontSize: "18px", fontWeight: "700" }}>
+            📅 Выберите дату аренды
+          </h3>
+          <BookingCalendar
+            costumeId={costume._id}
+            size={selectedSize}
+            selectedDate={selectedDate}
+            onDateSelect={setSelectedDate}
+          />
+        </div>
+      )}
+
       {availableSizes.length > 0 ? (
-        <button className="main-btn" onClick={() => navigate(`/book/${costume._id}`)}>
-          Забронировать
+        <button 
+          className="main-btn" 
+          onClick={handleBooking}
+          style={{
+            opacity: selectedDate ? 1 : 0.5,
+            cursor: selectedDate ? "pointer" : "not-allowed",
+          }}
+        >
+          {selectedDate ? "Забронировать на " + new Date(selectedDate).toLocaleDateString("ru-RU") : "Выберите дату для бронирования"}
         </button>
       ) : (
         <button className="main-btn" disabled style={{ opacity: 0.5, cursor: "not-allowed" }}>
