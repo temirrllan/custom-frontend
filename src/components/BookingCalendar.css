@@ -81,7 +81,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 3px;
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
   width: 100%;
   box-sizing: border-box;
   align-items: start;
