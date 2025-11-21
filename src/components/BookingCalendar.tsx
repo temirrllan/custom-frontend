@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import "./BookingCalendar.css";
-import WebApp from "@twa-dev/sdk";
 
 interface BookingCalendarProps {
   costumeId: string;
   size?: string;
-  selectedDate?: string; // YYYY-MM-DD
+  selectedDate?: string;
   onDateSelect: (date: string) => void;
 }
 
@@ -18,6 +16,8 @@ export default function BookingCalendar({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [bookedDates, setBookedDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [pendingDate, setPendingDate] = useState<string | null>(null);
 
   useEffect(() => {
     loadBookedDates();
@@ -61,18 +61,36 @@ export default function BookingCalendar({
   const isDateBooked = (dateStr: string) => bookedDates.includes(dateStr);
   const isDatePast = (dateStr: string) => new Date(dateStr) < new Date(new Date().setHours(0, 0, 0, 0));
 
+  // 🆕 Обработка клика на дату
   const handleDateClick = (dateStr: string) => {
     if (isDatePast(dateStr)) {
-      WebApp.showAlert("⚠️ Нельзя выбрать прошедшую дату");
+      alert("⚠️ Нельзя выбрать прошедшую дату");
       return;
     }
 
     if (isDateBooked(dateStr)) {
-      WebApp.showAlert("❌ Эта дата уже занята — выберите, пожалуйста, другой день");
+      alert("❌ Эта дата уже занята — выберите, пожалуйста, другой день");
       return;
     }
 
-    onDateSelect(dateStr);
+    // Показываем модальное окно с правилами
+    setPendingDate(dateStr);
+    setShowModal(true);
+  };
+
+  // 🆕 Подтверждение выбора даты
+  const confirmDateSelection = () => {
+    if (pendingDate) {
+      onDateSelect(pendingDate);
+      setShowModal(false);
+      setPendingDate(null);
+    }
+  };
+
+  // 🆕 Отмена выбора даты
+  const cancelDateSelection = () => {
+    setShowModal(false);
+    setPendingDate(null);
   };
 
   const prevMonth = () => {
@@ -124,44 +142,232 @@ export default function BookingCalendar({
     );
   }
 
+  // 🆕 Форматирование даты для модального окна
+  const formatModalDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("ru-RU", { 
+      day: "numeric", 
+      month: "long", 
+      year: "numeric",
+      weekday: "long"
+    });
+  };
+
+  const getPickupDate = (eventDateStr: string) => {
+    const eventDate = new Date(eventDateStr);
+    const pickup = new Date(eventDate);
+    pickup.setDate(pickup.getDate() - 1);
+    return pickup.toLocaleDateString("ru-RU", { 
+      day: "numeric", 
+      month: "long",
+      weekday: "short"
+    });
+  };
+
   return (
-    <div className="calendar-container">
-      <div className="calendar-header">
-        <button className="calendar-nav" onClick={prevMonth}>
-          ‹
-        </button>
-        <div className="calendar-title">
-          {monthNames[month]} {year}
-        </div>
-        <button className="calendar-nav" onClick={nextMonth}>
-          ›
-        </button>
-      </div>
+    <>
+      {/* 🆕 Модальное окно с правилами */}
+      {showModal && pendingDate && (
+        <div 
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            animation: "fadeIn 0.2s ease-out",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={cancelDateSelection}
+        >
+          <div 
+            style={{
+              background: "var(--tg-theme-secondary-bg-color, #fff)",
+              borderRadius: "20px",
+              padding: "24px",
+              maxWidth: "400px",
+              width: "90%",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+              animation: "slideUp 0.3s ease-out",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              textAlign: "center",
+              fontSize: "40px",
+              marginBottom: "16px"
+            }}>
+              📅
+            </div>
 
-      <div className="calendar-weekdays">
-        {["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"].map((day) => (
-          <div key={day} className="calendar-weekday">
-            {day}
+            <h3 style={{
+              fontSize: "20px",
+              fontWeight: "700",
+              marginBottom: "20px",
+              textAlign: "center",
+              color: "var(--tg-theme-text-color, #1c1c1e)"
+            }}>
+              Правила аренды
+            </h3>
+
+            <div style={{
+              fontSize: "15px",
+              lineHeight: "1.6",
+              color: "var(--tg-theme-text-color, #1c1c1e)",
+              marginBottom: "20px"
+            }}>
+              <p style={{ marginBottom: "16px", fontWeight: "600" }}>
+                🎭 Дата мероприятия:<br />
+                <span style={{ color: "#007aff", fontSize: "16px" }}>
+                  {formatModalDate(pendingDate)}
+                </span>
+              </p>
+
+              <div style={{
+                padding: "16px",
+                background: "rgba(0, 122, 255, 0.08)",
+                borderRadius: "12px",
+                marginBottom: "12px"
+              }}>
+                <p style={{ marginBottom: "8px" }}>
+                  <strong>📦 Выдача костюма:</strong>
+                </p>
+                <p style={{ color: "#007aff", fontWeight: "600" }}>
+                  {getPickupDate(pendingDate)}<br />
+                  с 17:00 до 19:00
+                </p>
+              </div>
+
+              <div style={{
+                padding: "16px",
+                background: "rgba(52, 199, 89, 0.08)",
+                borderRadius: "12px",
+                marginBottom: "12px"
+              }}>
+                <p style={{ marginBottom: "8px" }}>
+                  <strong>🔄 Возврат костюма:</strong>
+                </p>
+                <p style={{ color: "#34c759", fontWeight: "600" }}>
+                  {formatModalDate(pendingDate).split(',')[0]}<br />
+                  до 17:00
+                </p>
+              </div>
+
+              <div style={{
+                padding: "12px",
+                background: "rgba(255, 59, 48, 0.08)",
+                borderRadius: "12px",
+                border: "1px solid rgba(255, 59, 48, 0.2)"
+              }}>
+                <p style={{ fontSize: "14px", color: "#ff3b30" }}>
+                  ⚠️ При нарушении сроков возврата предусмотрен штраф
+                </p>
+              </div>
+            </div>
+
+            <div style={{
+              display: "flex",
+              gap: "12px",
+              marginTop: "20px"
+            }}>
+              <button 
+                onClick={confirmDateSelection}
+                style={{
+                  flex: 1,
+                  padding: "14px",
+                  background: "#007aff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                ✓ Понятно, продолжить
+              </button>
+              <button 
+                onClick={cancelDateSelection}
+                style={{
+                  padding: "14px 20px",
+                  background: "transparent",
+                  color: "var(--tg-theme-text-color, #1c1c1e)",
+                  border: "2px solid #e0e0e0",
+                  borderRadius: "12px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
-        ))}
+        </div>
+      )}
+
+      <div className="calendar-container">
+        <div className="calendar-header">
+          <button className="calendar-nav" onClick={prevMonth}>
+            ‹
+          </button>
+          <div className="calendar-title">
+            {monthNames[month]} {year}
+          </div>
+          <button className="calendar-nav" onClick={nextMonth}>
+            ›
+          </button>
+        </div>
+
+        <div className="calendar-weekdays">
+          {["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"].map((day) => (
+            <div key={day} className="calendar-weekday">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="calendar-days">{days}</div>
+
+        <div className="calendar-legend">
+          <div className="legend-item">
+            <div className="legend-color free"></div>
+            <span>Свободно</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color booked"></div>
+            <span>Занято</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color selected"></div>
+            <span>Выбрано</span>
+          </div>
+        </div>
       </div>
 
-      <div className="calendar-days">{days}</div>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
 
-      <div className="calendar-legend">
-        <div className="legend-item">
-          <div className="legend-color free"></div>
-          <span>Свободно</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-color booked"></div>
-          <span>Занято</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-color selected"></div>
-          <span>Выбрано</span>
-        </div>
-      </div>
-    </div>
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </>
   );
 }
