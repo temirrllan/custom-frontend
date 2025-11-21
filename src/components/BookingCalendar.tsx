@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import "./BookingCalendar.css"
 interface BookingCalendarProps {
   costumeId: string;
   size?: string;
