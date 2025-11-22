@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./BookingCalendar.css"
+
 interface BookingCalendarProps {
   costumeId: string;
   size?: string;
@@ -21,7 +22,7 @@ export default function BookingCalendar({
 
   useEffect(() => {
     loadBookedDates();
-  }, [costumeId, size]);
+  }, [costumeId, size, currentMonth]); // ✅ Перезагружаем при смене месяца
 
   const loadBookedDates = async () => {
     setLoading(true);
@@ -34,8 +35,11 @@ export default function BookingCalendar({
       const res = await fetch(url);
       const data = await res.json();
       setBookedDates(data.map((d: any) => d.date));
+      
+      console.log(`📅 [CALENDAR] Загружены забронированные даты:`, data.map((d: any) => d.date));
     } catch (err) {
       console.error("Ошибка загрузки занятых дат:", err);
+      setBookedDates([]);
     } finally {
       setLoading(false);
     }
@@ -58,8 +62,20 @@ export default function BookingCalendar({
     return `${year}-${m}-${d}`;
   };
 
-  const isDateBooked = (dateStr: string) => bookedDates.includes(dateStr);
-  const isDatePast = (dateStr: string) => new Date(dateStr) < new Date(new Date().setHours(0, 0, 0, 0));
+  const isDateBooked = (dateStr: string) => {
+    const isBooked = bookedDates.includes(dateStr);
+    if (isBooked) {
+      console.log(`🔴 [CALENDAR] Дата ${dateStr} забронирована`);
+    }
+    return isBooked;
+  };
+
+  const isDatePast = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
 
   // 🆕 Обработка клика на дату
   const handleDateClick = (dateStr: string) => {
@@ -69,7 +85,7 @@ export default function BookingCalendar({
     }
 
     if (isDateBooked(dateStr)) {
-      alert("❌ Эта дата уже занята — выберите, пожалуйста, другой день");
+      alert(`❌ К сожалению, все костюмы этого размера заняты на ${new Date(dateStr).toLocaleDateString("ru-RU")}.\n\nПожалуйста, выберите другой день.`);
       return;
     }
 

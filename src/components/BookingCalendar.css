@@ -116,6 +116,7 @@
   padding: 0;
 }
 
+/* ✅ Свободные даты - при наведении */
 .calendar-day:not(.empty):not(.booked):not(.past):hover {
   background: var(--tg-theme-link-color, #007aff);
   color: #fff;
@@ -126,6 +127,7 @@
   transform: scale(0.95);
 }
 
+/* ✅ Выбранная дата - синяя */
 .calendar-day.selected {
   background: var(--tg-theme-link-color, #007aff);
   color: #fff;
@@ -133,11 +135,13 @@
   box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
 }
 
+/* 🔴 ЗАБРОНИРОВАННАЯ ДАТА - КРАСНАЯ */
 .calendar-day.booked {
-  background: #ff3b30;
-  color: #fff;
-  cursor: not-allowed;
-  opacity: 0.6;
+  background: #ff3b30 !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+  font-weight: 600;
 }
 
 .calendar-day.booked::after {
@@ -147,6 +151,18 @@
   font-weight: 700;
 }
 
+/* При наведении на забронированную - не меняем стиль */
+.calendar-day.booked:hover {
+  background: #ff3b30 !important;
+  color: #fff !important;
+  transform: none !important;
+}
+
+.calendar-day.booked:active {
+  transform: scale(0.98) !important;
+}
+
+/* ⚪ Прошедшие даты - серые */
 .calendar-day.past {
   background: transparent;
   color: var(--tg-theme-hint-color, #c7c7cc);
