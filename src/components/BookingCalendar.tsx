@@ -20,25 +20,44 @@ export default function BookingCalendar({
   const [showModal, setShowModal] = useState(false);
   const [pendingDate, setPendingDate] = useState<string | null>(null);
 
+  // Загружаем забронированные даты при монтировании и при смене месяца/размера
   useEffect(() => {
-    loadBookedDates();
-  }, [costumeId, size, currentMonth]); // ✅ Перезагружаем при смене месяца
+    if (size) {
+      loadBookedDates();
+    }
+  }, [costumeId, size, currentMonth]);
 
   const loadBookedDates = async () => {
+    if (!size) {
+      console.log("⚠️ [CALENDAR] Размер не выбран, пропускаем загрузку");
+      setBookedDates([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
-      const url = size
-        ? `${API_BASE}/api/costumes/${costumeId}/booked-dates?size=${size}`
-        : `${API_BASE}/api/costumes/${costumeId}/booked-dates`;
+      const url = `${API_BASE}/api/costumes/${costumeId}/booked-dates?size=${size}`;
 
-      const res = await fetch(url);
-      const data = await res.json();
-      setBookedDates(data.map((d: any) => d.date));
+      console.log(`📅 [CALENDAR] Загружаем забронированные даты для размера ${size}...`);
       
-      console.log(`📅 [CALENDAR] Загружены забронированные даты:`, data.map((d: any) => d.date));
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      
+      const data = await res.json();
+      const dates = data.map((d: any) => d.date);
+      
+      setBookedDates(dates);
+      
+      console.log(`✅ [CALENDAR] Загружено забронированных дат: ${dates.length}`);
+      if (dates.length > 0) {
+        console.log(`🔴 [CALENDAR] Забронированные даты:`, dates);
+      }
     } catch (err) {
-      console.error("Ошибка загрузки занятых дат:", err);
+      console.error("❌ [CALENDAR] Ошибка загрузки занятых дат:", err);
       setBookedDates([]);
     } finally {
       setLoading(false);
@@ -63,11 +82,7 @@ export default function BookingCalendar({
   };
 
   const isDateBooked = (dateStr: string) => {
-    const isBooked = bookedDates.includes(dateStr);
-    if (isBooked) {
-      console.log(`🔴 [CALENDAR] Дата ${dateStr} забронирована`);
-    }
-    return isBooked;
+    return bookedDates.includes(dateStr);
   };
 
   const isDatePast = (dateStr: string) => {
@@ -77,7 +92,6 @@ export default function BookingCalendar({
     return date < today;
   };
 
-  // 🆕 Обработка клика на дату
   const handleDateClick = (dateStr: string) => {
     if (isDatePast(dateStr)) {
       alert("⚠️ Нельзя выбрать прошедшую дату");
@@ -85,7 +99,12 @@ export default function BookingCalendar({
     }
 
     if (isDateBooked(dateStr)) {
-      alert(`❌ К сожалению, все костюмы этого размера заняты на ${new Date(dateStr).toLocaleDateString("ru-RU")}.\n\nПожалуйста, выберите другой день.`);
+      const formattedDate = new Date(dateStr).toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+      alert(`❌ К сожалению, все костюмы этого размера заняты на ${formattedDate}.\n\nПожалуйста, выберите другой день.`);
       return;
     }
 
@@ -94,7 +113,6 @@ export default function BookingCalendar({
     setShowModal(true);
   };
 
-  // 🆕 Подтверждение выбора даты
   const confirmDateSelection = () => {
     if (pendingDate) {
       onDateSelect(pendingDate);
@@ -103,7 +121,6 @@ export default function BookingCalendar({
     }
   };
 
-  // 🆕 Отмена выбора даты
   const cancelDateSelection = () => {
     setShowModal(false);
     setPendingDate(null);
@@ -127,23 +144,37 @@ export default function BookingCalendar({
   ];
 
   const days = [];
+  
+  // Пустые ячейки до начала месяца
   for (let i = 0; i < startingDayOfWeek; i++) {
     days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
   }
 
+  // Дни месяца
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = formatDate(year, month, day);
     const isBooked = isDateBooked(dateStr);
     const isPast = isDatePast(dateStr);
     const isSelected = dateStr === selectedDate;
 
+    // Определяем CSS классы
+    let className = "calendar-day";
+    if (isBooked) className += " booked";
+    if (isPast) className += " past";
+    if (isSelected && !isBooked) className += " selected"; // Не показываем selected для забронированных
+
     days.push(
       <div
         key={day}
-        className={`calendar-day ${isBooked ? "booked" : ""} ${isPast ? "past" : ""} ${
-          isSelected ? "selected" : ""
-        }`}
-        onClick={() => !isPast && handleDateClick(dateStr)}
+        className={className}
+        onClick={() => handleDateClick(dateStr)}
+        title={
+          isBooked 
+            ? `❌ Занято (${new Date(dateStr).toLocaleDateString("ru-RU")})` 
+            : isPast 
+            ? "Прошедшая дата" 
+            : `Выбрать ${new Date(dateStr).toLocaleDateString("ru-RU")}`
+        }
       >
         {day}
       </div>
@@ -158,7 +189,6 @@ export default function BookingCalendar({
     );
   }
 
-  // 🆕 Форматирование даты для модального окна
   const formatModalDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ru-RU", { 
@@ -182,140 +212,59 @@ export default function BookingCalendar({
 
   return (
     <>
-      {/* 🆕 Модальное окно с правилами */}
+      {/* Модальное окно с правилами */}
       {showModal && pendingDate && (
         <div 
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0, 0, 0, 0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            animation: "fadeIn 0.2s ease-out",
-            backdropFilter: "blur(4px)",
-          }}
+          className="modal-overlay"
           onClick={cancelDateSelection}
         >
           <div 
-            style={{
-              background: "var(--tg-theme-secondary-bg-color, #fff)",
-              borderRadius: "20px",
-              padding: "24px",
-              maxWidth: "400px",
-              width: "90%",
-              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
-              animation: "slideUp 0.3s ease-out",
-            }}
+            className="modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{
-              textAlign: "center",
-              fontSize: "40px",
-              marginBottom: "16px"
-            }}>
-              📅
-            </div>
+            <div className="modal-icon">📅</div>
 
-            <h3 style={{
-              fontSize: "20px",
-              fontWeight: "700",
-              marginBottom: "20px",
-              textAlign: "center",
-              color: "var(--tg-theme-text-color, #1c1c1e)"
-            }}>
-              Правила аренды
-            </h3>
+            <h3 className="modal-title">Правила аренды</h3>
 
-            <div style={{
-              fontSize: "15px",
-              lineHeight: "1.6",
-              color: "var(--tg-theme-text-color, #1c1c1e)",
-              marginBottom: "20px"
-            }}>
-              <p style={{ marginBottom: "16px", fontWeight: "600" }}>
+            <div className="modal-body">
+              <p className="modal-event-date">
                 🎭 Дата мероприятия:<br />
-                <span style={{ color: "#007aff", fontSize: "16px" }}>
+                <span className="highlight-blue">
                   {formatModalDate(pendingDate)}
                 </span>
               </p>
 
-              <div style={{
-                padding: "16px",
-                background: "rgba(0, 122, 255, 0.08)",
-                borderRadius: "12px",
-                marginBottom: "12px"
-              }}>
-                <p style={{ marginBottom: "8px" }}>
-                  <strong>📦 Выдача костюма:</strong>
-                </p>
-                <p style={{ color: "#007aff", fontWeight: "600" }}>
+              <div className="modal-info-box pickup">
+                <p className="info-label">📦 Выдача костюма:</p>
+                <p className="info-value">
                   {getPickupDate(pendingDate)}<br />
                   с 17:00 до 19:00
                 </p>
               </div>
 
-              <div style={{
-                padding: "16px",
-                background: "rgba(52, 199, 89, 0.08)",
-                borderRadius: "12px",
-                marginBottom: "12px"
-              }}>
-                <p style={{ marginBottom: "8px" }}>
-                  <strong>🔄 Возврат костюма:</strong>
-                </p>
-                <p style={{ color: "#34c759", fontWeight: "600" }}>
+              <div className="modal-info-box return">
+                <p className="info-label">🔄 Возврат костюма:</p>
+                <p className="info-value">
                   {formatModalDate(pendingDate).split(',')[0]}<br />
                   до 17:00
                 </p>
               </div>
 
-              <div style={{
-                padding: "12px",
-                background: "rgba(255, 59, 48, 0.08)",
-                borderRadius: "12px",
-                border: "1px solid rgba(255, 59, 48, 0.2)"
-              }}>
-                <p style={{ fontSize: "14px", color: "#ff3b30" }}>
-                  ⚠️ При нарушении сроков возврата предусмотрен штраф
-                </p>
+              <div className="modal-warning">
+                <p>⚠️ При нарушении сроков возврата предусмотрен штраф</p>
               </div>
             </div>
 
-            <div style={{
-              display: "flex",
-              gap: "12px",
-              marginTop: "20px"
-            }}>
+            <div className="modal-actions">
               <button 
+                className="modal-btn confirm"
                 onClick={confirmDateSelection}
-                style={{
-                  flex: 1,
-                  padding: "14px",
-                  background: "#007aff",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "12px",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  cursor: "pointer"
-                }}
               >
                 ✓ Понятно, продолжить
               </button>
               <button 
+                className="modal-btn cancel"
                 onClick={cancelDateSelection}
-                style={{
-                  padding: "14px 20px",
-                  background: "transparent",
-                  color: "var(--tg-theme-text-color, #1c1c1e)",
-                  border: "2px solid #e0e0e0",
-                  borderRadius: "12px",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  cursor: "pointer"
-                }}
               >
                 ✕
               </button>
@@ -326,13 +275,13 @@ export default function BookingCalendar({
 
       <div className="calendar-container">
         <div className="calendar-header">
-          <button className="calendar-nav" onClick={prevMonth}>
+          <button className="calendar-nav" onClick={prevMonth} aria-label="Предыдущий месяц">
             ‹
           </button>
           <div className="calendar-title">
             {monthNames[month]} {year}
           </div>
-          <button className="calendar-nav" onClick={nextMonth}>
+          <button className="calendar-nav" onClick={nextMonth} aria-label="Следующий месяц">
             ›
           </button>
         </div>
@@ -356,34 +305,14 @@ export default function BookingCalendar({
             <div className="legend-color booked"></div>
             <span>Занято</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-color selected"></div>
-            <span>Выбрано</span>
-          </div>
+          {selectedDate && !isDateBooked(selectedDate) && (
+            <div className="legend-item">
+              <div className="legend-color selected"></div>
+              <span>Выбрано</span>
+            </div>
+          )}
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </>
   );
 }

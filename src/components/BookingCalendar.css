@@ -1,3 +1,4 @@
+/* ===== КОНТЕЙНЕР КАЛЕНДАРЯ ===== */
 .calendar-container {
   background: var(--tg-theme-secondary-bg-color, #fff);
   border-radius: 16px;
@@ -18,6 +19,7 @@
   font-size: 15px;
 }
 
+/* ===== ЗАГОЛОВОК ===== */
 .calendar-header {
   display: flex;
   justify-content: space-between;
@@ -60,6 +62,7 @@
   background: var(--tg-theme-hint-color, #e0e0e0);
 }
 
+/* ===== ДНИ НЕДЕЛИ ===== */
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -77,6 +80,7 @@
   padding: 6px 0;
 }
 
+/* ===== СЕТКА ДНЕЙ ===== */
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -87,6 +91,7 @@
   align-items: start;
 }
 
+/* ===== ДЕНЬ КАЛЕНДАРЯ (базовый стиль) ===== */
 .calendar-day {
   aspect-ratio: 1;
   display: flex;
@@ -107,6 +112,7 @@
   min-width: 0;
 }
 
+/* ===== ПУСТЫЕ ЯЧЕЙКИ ===== */
 .calendar-day.empty {
   background: transparent;
   cursor: default;
@@ -116,7 +122,7 @@
   padding: 0;
 }
 
-/* ✅ Свободные даты - при наведении */
+/* ===== СВОБОДНЫЕ ДАТЫ (при наведении) ===== */
 .calendar-day:not(.empty):not(.booked):not(.past):hover {
   background: var(--tg-theme-link-color, #007aff);
   color: #fff;
@@ -127,49 +133,56 @@
   transform: scale(0.95);
 }
 
-/* ✅ Выбранная дата - синяя */
+/* ===== ВЫБРАННАЯ ДАТА (синяя) ===== */
 .calendar-day.selected {
-  background: var(--tg-theme-link-color, #007aff);
-  color: #fff;
+  background: var(--tg-theme-link-color, #007aff) !important;
+  color: #fff !important;
   font-weight: 700;
   box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
 }
 
-/* 🔴 ЗАБРОНИРОВАННАЯ ДАТА - КРАСНАЯ */
+/* 🔴🔴🔴 ЗАБРОНИРОВАННАЯ ДАТА (КРАСНАЯ) 🔴🔴🔴 */
 .calendar-day.booked {
   background: #ff3b30 !important;
   color: #fff !important;
   cursor: not-allowed !important;
   opacity: 1 !important;
-  font-weight: 600;
+  font-weight: 700 !important;
+  position: relative;
 }
 
+/* Крестик на забронированной дате */
 .calendar-day.booked::after {
   content: "✕";
   position: absolute;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* При наведении на забронированную - не меняем стиль */
+/* При наведении на забронированную дату */
 .calendar-day.booked:hover {
   background: #ff3b30 !important;
   color: #fff !important;
-  transform: none !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.4);
 }
 
 .calendar-day.booked:active {
   transform: scale(0.98) !important;
 }
 
-/* ⚪ Прошедшие даты - серые */
+/* ⚪ ПРОШЕДШИЕ ДАТЫ (серые) ===== */
 .calendar-day.past {
   background: transparent;
   color: var(--tg-theme-hint-color, #c7c7cc);
   cursor: not-allowed;
   text-decoration: line-through;
+  opacity: 0.5;
 }
 
+/* ===== ЛЕГЕНДА ===== */
 .calendar-legend {
   display: flex;
   justify-content: center;
@@ -208,6 +221,145 @@
   background: var(--tg-theme-link-color, #007aff);
 }
 
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: var(--tg-theme-secondary-bg-color, #fff);
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-icon {
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--tg-theme-text-color, #1c1c1e);
+}
+
+.modal-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--tg-theme-text-color, #1c1c1e);
+  margin-bottom: 20px;
+}
+
+.modal-event-date {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.highlight-blue {
+  color: #007aff;
+  font-size: 16px;
+  display: block;
+  margin-top: 4px;
+}
+
+.modal-info-box {
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.modal-info-box.pickup {
+  background: rgba(0, 122, 255, 0.08);
+}
+
+.modal-info-box.return {
+  background: rgba(52, 199, 89, 0.08);
+}
+
+.info-label {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.info-value {
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-info-box.pickup .info-value {
+  color: #007aff;
+}
+
+.modal-info-box.return .info-value {
+  color: #34c759;
+}
+
+.modal-warning {
+  padding: 12px;
+  background: rgba(255, 59, 48, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.modal-warning p {
+  font-size: 14px;
+  color: #ff3b30;
+  margin: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-btn {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-btn.confirm {
+  flex: 1;
+  background: #007aff;
+  color: #fff;
+}
+
+.modal-btn.confirm:hover {
+  opacity: 0.9;
+}
+
+.modal-btn.cancel {
+  padding: 14px 20px;
+  background: transparent;
+  color: var(--tg-theme-text-color, #1c1c1e);
+  border: 2px solid #e0e0e0;
+}
+
+.modal-btn.cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== АНИМАЦИИ ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -219,9 +371,18 @@
   }
 }
 
-/* ===== АДАПТИВНОСТЬ ===== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-/* Для экранов от 400px до 640px */
+/* ===== АДАПТИВНОСТЬ ===== */
 @media (min-width: 400px) and (max-width: 640px) {
   .calendar-container {
     padding: 18px;
@@ -234,40 +395,22 @@
   .calendar-nav {
     width: 34px;
     height: 34px;
-    min-width: 34px;
     font-size: 22px;
-  }
-
-  .calendar-weekday {
-    font-size: 12px;
-    padding: 7px 0;
   }
 
   .calendar-day {
     font-size: 14px;
-    border-radius: 11px;
   }
 
-  .calendar-days {
-    gap: 4px;
-  }
-
-  .legend-item {
-    font-size: 13px;
-  }
-
-  .legend-color {
-    width: 20px;
-    height: 20px;
+  .calendar-day.booked::after {
+    font-size: 19px;
   }
 }
 
-/* Для больших экранов (планшеты) */
 @media (min-width: 640px) {
   .calendar-container {
     padding: 24px;
     max-width: 500px;
-    margin: 0 auto;
   }
 
   .calendar-title {
@@ -277,50 +420,21 @@
   .calendar-nav {
     width: 38px;
     height: 38px;
-    min-width: 38px;
     font-size: 24px;
-  }
-
-  .calendar-weekday {
-    font-size: 13px;
-    padding: 8px 0;
   }
 
   .calendar-day {
     font-size: 15px;
-    border-radius: 12px;
   }
 
-  .calendar-days {
-    gap: 5px;
-    margin-bottom: 20px;
-  }
-
-  .legend-item {
-    font-size: 14px;
-  }
-
-  .legend-color {
-    width: 22px;
-    height: 22px;
-  }
-
-  .calendar-legend {
-    gap: 16px;
-    padding-top: 16px;
+  .calendar-day.booked::after {
+    font-size: 20px;
   }
 }
 
-/* Для маленьких экранов (до 360px) */
 @media (max-width: 360px) {
   .calendar-container {
     padding: 12px;
-    border-radius: 14px;
-  }
-
-  .calendar-header {
-    margin-bottom: 12px;
-    gap: 6px;
   }
 
   .calendar-title {
@@ -330,141 +444,29 @@
   .calendar-nav {
     width: 28px;
     height: 28px;
-    min-width: 28px;
     font-size: 18px;
   }
 
-  .calendar-weekday {
-    font-size: 10px;
-    padding: 5px 0;
-  }
-
   .calendar-day {
     font-size: 12px;
-    border-radius: 8px;
   }
 
   .calendar-day.booked::after {
-    font-size: 14px;
-  }
-
-  .calendar-days {
-    gap: 2px;
-    margin-bottom: 12px;
-  }
-
-  .calendar-legend {
-    gap: 8px;
-    padding-top: 10px;
-  }
-
-  .legend-item {
-    font-size: 11px;
-  }
-
-  .legend-color {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-/* Для очень маленьких экранов (до 320px) */
-@media (max-width: 320px) {
-  .calendar-container {
-    padding: 10px;
-  }
-
-  .calendar-title {
-    font-size: 14px;
-  }
-
-  .calendar-nav {
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
     font-size: 16px;
   }
+}
 
-  .calendar-weekday {
-    font-size: 9px;
-    padding: 4px 0;
-  }
-
+@media (max-width: 320px) {
   .calendar-day {
     font-size: 11px;
-    border-radius: 7px;
   }
 
   .calendar-day.booked::after {
-    font-size: 12px;
-  }
-
-  .calendar-days {
-    gap: 2px;
-  }
-
-  .legend-item {
-    font-size: 10px;
-  }
-
-  .legend-color {
-    width: 14px;
-    height: 14px;
+    font-size: 14px;
   }
 }
 
-/* Для landscape (горизонтальная ориентация) на маленьких экранах */
-@media (orientation: landscape) and (max-height: 500px) {
-  .calendar-container {
-    padding: 12px;
-  }
-
-  .calendar-header {
-    margin-bottom: 10px;
-  }
-
-  .calendar-title {
-    font-size: 15px;
-  }
-
-  .calendar-nav {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-  }
-
-  .calendar-weekday {
-    font-size: 10px;
-    padding: 4px 0;
-  }
-
-  .calendar-day {
-    font-size: 12px;
-  }
-
-  .calendar-days {
-    gap: 2px;
-    margin-bottom: 10px;
-  }
-
-  .calendar-legend {
-    padding-top: 10px;
-    gap: 10px;
-  }
-
-  .legend-item {
-    font-size: 11px;
-  }
-}
-
-/* Для очень широких экранов */
-@media (min-width: 1024px) {
-  .calendar-container {
-    max-width: 550px;
-  }
-}
-
-/* Убираем нежелательные эффекты на iOS */
+/* iOS оптимизация */
 @supports (-webkit-touch-callout: none) {
   .calendar-day {
     -webkit-tap-highlight-color: transparent;
@@ -473,13 +475,13 @@
   }
 }
 
-/* Оптимизация для высоких DPI экранов */
+/* Высокие DPI экраны */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .calendar-day {
-    border-radius: 10px;
-  }
-  
   .calendar-day.selected {
     box-shadow: 0 0 0 2.5px rgba(0, 122, 255, 0.3);
+  }
+  
+  .calendar-day.booked:hover {
+    box-shadow: 0 2px 10px rgba(255, 59, 48, 0.5);
   }
 }
