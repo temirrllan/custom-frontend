@@ -46,7 +46,7 @@ export default function Orders() {
       });
 
       WebApp.showAlert("✅ Заказ успешно отменён!");
-      loadOrders(); // перезагружаем список
+      loadOrders();
     } catch (err: any) {
       console.error("Ошибка отмены заказа:", err);
       const errorMsg = err.response?.data?.error || "Ошибка при отмене заказа";
@@ -56,10 +56,10 @@ export default function Orders() {
 
   const getStatusLabel = (status: string) => {
     const labels: { [key: string]: string } = {
-      new: "🕐 Новая",
-      confirmed: "✅ Подтверждена",
+      new: "🕐 Ожидает подтверждения",
+      confirmed: "✅ Выдан в руки",
       cancelled: "❌ Отменена",
-      completed: "✔️ Завершена",
+      completed: "✔️ Возвращён",
     };
     return labels[status] || status;
   };
@@ -67,11 +67,21 @@ export default function Orders() {
   const getStatusColor = (status: string) => {
     const colors: { [key: string]: string } = {
       new: "#007aff",
-      confirmed: "#34c759",
+      confirmed: "#ff9500",
       cancelled: "#ff3b30",
-      completed: "#8e8e93",
+      completed: "#34c759",
     };
     return colors[status] || "#8e8e93";
+  };
+
+  const getStatusDescription = (status: string, order: any) => {
+    const descriptions: { [key: string]: string } = {
+      new: "Ожидаем, пока администратор подтвердит вашу заявку",
+      confirmed: `Костюм выдан. Не забудьте вернуть до ${new Date(order.returnDate).toLocaleDateString("ru-RU")} до 17:00`,
+      cancelled: "Заказ был отменён",
+      completed: "Костюм успешно возвращён. Спасибо!",
+    };
+    return descriptions[status] || "";
   };
 
   if (loading) return <Loader text="Загрузка заказов..." />;
@@ -98,10 +108,26 @@ export default function Orders() {
                 <h3>{order.costumeTitle}</h3>
                 <span
                   className="order-status"
-                  style={{ color: getStatusColor(order.status) }}
+                  style={{ 
+                    color: getStatusColor(order.status),
+                    background: `${getStatusColor(order.status)}15`
+                  }}
                 >
                   {getStatusLabel(order.status)}
                 </span>
+              </div>
+
+              {/* 🆕 Описание статуса */}
+              <div style={{
+                padding: "12px",
+                background: `${getStatusColor(order.status)}10`,
+                borderRadius: "10px",
+                marginBottom: "12px",
+                fontSize: "14px",
+                color: "var(--tg-theme-hint-color, #8e8e93)",
+                lineHeight: "1.4"
+              }}>
+                {getStatusDescription(order.status, order)}
               </div>
 
               <div className="order-details">
@@ -109,6 +135,32 @@ export default function Orders() {
                   <span className="label">Размер:</span>
                   <span className="value">{order.size}</span>
                 </div>
+
+                <div className="order-row">
+                  <span className="label">Дата мероприятия:</span>
+                  <span className="value">
+                    {new Date(order.eventDate || order.bookingDate).toLocaleDateString("ru-RU")}
+                  </span>
+                </div>
+
+                {/* 🆕 Даты выдачи и возврата */}
+                {order.pickupDate && (
+                  <div className="order-row">
+                    <span className="label">📦 Выдача:</span>
+                    <span className="value">
+                      {new Date(order.pickupDate).toLocaleDateString("ru-RU")} 17:00-19:00
+                    </span>
+                  </div>
+                )}
+
+                {order.returnDate && (
+                  <div className="order-row">
+                    <span className="label">🔄 Возврат:</span>
+                    <span className="value">
+                      {new Date(order.returnDate).toLocaleDateString("ru-RU")} до 17:00
+                    </span>
+                  </div>
+                )}
 
                 {order.childName && (
                   <div className="order-row">
@@ -132,8 +184,8 @@ export default function Orders() {
                 </div>
               </div>
 
-              {/* Кнопка отмены (только для новых и подтверждённых) */}
-              {(order.status === "new" || order.status === "confirmed") && (
+              {/* Кнопка отмены (только для новых заказов) */}
+              {order.status === "new" && (
                 <button
                   className="cancel-btn"
                   onClick={() => cancelOrder(order._id)}
@@ -145,6 +197,36 @@ export default function Orders() {
               {order.status === "cancelled" && (
                 <div className="cancelled-notice">
                   Заказ отменён
+                </div>
+              )}
+
+              {order.status === "completed" && (
+                <div style={{
+                  padding: "12px",
+                  background: "rgba(52, 199, 89, 0.1)",
+                  border: "2px solid #34c759",
+                  borderRadius: "12px",
+                  color: "#34c759",
+                  textAlign: "center",
+                  fontWeight: "600",
+                  marginTop: "8px"
+                }}>
+                  ✅ Костюм возвращён
+                </div>
+              )}
+
+              {order.status === "confirmed" && (
+                <div style={{
+                  padding: "12px",
+                  background: "rgba(255, 149, 0, 0.1)",
+                  border: "2px solid #ff9500",
+                  borderRadius: "12px",
+                  color: "#ff9500",
+                  textAlign: "center",
+                  fontWeight: "600",
+                  marginTop: "8px"
+                }}>
+                  ⚠️ У вас на руках костюм
                 </div>
               )}
             </div>
