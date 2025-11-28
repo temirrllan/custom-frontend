@@ -3,88 +3,113 @@ import { useNavigate, useLocation } from "react-router-dom";
 import WebApp from "@twa-dev/sdk";
 
 /**
- * Хук для управления кнопкой "Назад" в Telegram Web App
- * 
- * Автоматически показывает/скрывает кнопку в зависимости от текущего роута
- * и настраивает действие при нажатии
+ * 🔍 ОТЛАДОЧНАЯ ВЕРСИЯ с максимальным логированием
  */
 export function useBackButton() {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const backButton = WebApp.BackButton;
+    console.log("═══════════════════════════════════════");
+    console.log("🔍 [DEBUG] useBackButton начал работу");
+    console.log("📍 [DEBUG] Текущий путь:", location.pathname);
+    console.log("📱 [DEBUG] Telegram WebApp версия:", WebApp.version);
+    console.log("🖥️ [DEBUG] Платформа:", WebApp.platform);
 
-    // Определяем, находимся ли мы на главной странице
+    // Проверяем наличие BackButton
+    if (!WebApp.BackButton) {
+      console.error("❌ [ERROR] WebApp.BackButton не существует!");
+      console.log("💡 [HINT] Возможно, используется старая версия Telegram");
+      console.log("💡 [HINT] Минимальная версия для BackButton: 6.1");
+      return;
+    }
+
+    const backButton = WebApp.BackButton;
+    console.log("✅ [DEBUG] BackButton объект найден:", backButton);
+
+    // Проверяем методы
+    console.log("🔧 [DEBUG] Доступные методы:", {
+      show: typeof backButton.show,
+      hide: typeof backButton.hide,
+      onClick: typeof backButton.onClick,
+      offClick: typeof backButton.offClick,
+      isVisible: backButton.isVisible,
+    });
+
     const isMainPage = location.pathname === "/";
+    console.log("🏠 [DEBUG] Это главная страница?", isMainPage);
 
     if (isMainPage) {
-      // На главной странице скрываем кнопку "Назад"
-      backButton.hide();
+      console.log("👻 [ACTION] Скрываем BackButton...");
+      try {
+        backButton.hide();
+        console.log("✅ [SUCCESS] BackButton.hide() выполнен");
+        console.log("👁️ [STATE] isVisible:", backButton.isVisible);
+      } catch (e) {
+        console.error("❌ [ERROR] Ошибка при скрытии:", e);
+      }
     } else {
-      // На всех остальных страницах показываем кнопку "Назад"
-      backButton.show();
+      console.log("👁️ [ACTION] Показываем BackButton...");
+      
+      try {
+        backButton.show();
+        console.log("✅ [SUCCESS] BackButton.show() выполнен");
+        console.log("👁️ [STATE] isVisible:", backButton.isVisible);
+      } catch (e) {
+        console.error("❌ [ERROR] Ошибка при показе:", e);
+      }
 
-      // Устанавливаем обработчик клика
       const handleBackClick = () => {
-        navigate(-1); // Возврат на предыдущую страницу
+        console.log("⬅️ [EVENT] BackButton нажата!");
+        console.log("🔙 [ACTION] Переход назад...");
+        navigate(-1);
       };
 
-      backButton.onClick(handleBackClick);
+      try {
+        backButton.onClick(handleBackClick);
+        console.log("✅ [SUCCESS] onClick обработчик установлен");
+      } catch (e) {
+        console.error("❌ [ERROR] Ошибка установки onClick:", e);
+      }
 
-      // Cleanup: удаляем обработчик при размонтировании
+      // Cleanup
       return () => {
-        backButton.offClick(handleBackClick);
+        console.log("🧹 [CLEANUP] Удаление обработчика...");
+        try {
+          backButton.offClick(handleBackClick);
+          console.log("✅ [SUCCESS] Обработчик удалён");
+        } catch (e) {
+          console.error("❌ [ERROR] Ошибка удаления обработчика:", e);
+        }
       };
     }
+
+    console.log("═══════════════════════════════════════");
   }, [location.pathname, navigate]);
 }
 
 /**
- * Альтернативная версия с настройкой для конкретных страниц
+ * 🎯 Принудительная проверка BackButton (для тестирования)
+ * Использовать в консоли DevTools
  */
-export function useBackButtonWithConfig(options?: {
-  showOnPaths?: string[]; // Показывать только на этих путях
-  hideOnPaths?: string[]; // Скрывать на этих путях
-  onBack?: () => void;     // Кастомное действие при нажатии
-}) {
-  const navigate = useNavigate();
-  const location = useLocation();
+export function debugBackButton() {
+  console.log("🔍 ========== DEBUG INFO ==========");
+  console.log("WebApp:", WebApp);
+  console.log("BackButton:", WebApp.BackButton);
+  
+  if (WebApp.BackButton) {
+    console.log("BackButton.isVisible:", WebApp.BackButton.isVisible);
+    console.log("Попытка показать...");
+    WebApp.BackButton.show();
+    console.log("После show() - isVisible:", WebApp.BackButton.isVisible);
+  } else {
+    console.error("BackButton недоступен!");
+  }
+  console.log("==================================");
+}
 
-  useEffect(() => {
-    const backButton = WebApp.BackButton;
-    const currentPath = location.pathname;
-
-    // Проверяем, нужно ли показывать кнопку на текущем пути
-    let shouldShow = currentPath !== "/";
-
-    if (options?.showOnPaths) {
-      shouldShow = options.showOnPaths.some(path => currentPath.startsWith(path));
-    }
-
-    if (options?.hideOnPaths) {
-      const shouldHide = options.hideOnPaths.some(path => currentPath.startsWith(path));
-      if (shouldHide) shouldShow = false;
-    }
-
-    if (shouldShow) {
-      backButton.show();
-
-      const handleBackClick = () => {
-        if (options?.onBack) {
-          options.onBack();
-        } else {
-          navigate(-1);
-        }
-      };
-
-      backButton.onClick(handleBackClick);
-
-      return () => {
-        backButton.offClick(handleBackClick);
-      };
-    } else {
-      backButton.hide();
-    }
-  }, [location.pathname, navigate, options]);
+// Экспортируем для использования в консоли
+if (typeof window !== "undefined") {
+  (window as any).debugBackButton = debugBackButton;
+  console.log("💡 Для отладки используй: window.debugBackButton()");
 }
