@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCostumes } from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { useBackButton } from "../hooks/useBackButton";
 import "./Catalog.css";
 import { getFullUrl } from "../api/adminApi";
 import Loader from "../components/Loader";
@@ -9,6 +10,9 @@ export default function Catalog() {
   const [costumes, setCostumes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // 🆕 Подключаем хук для управления кнопкой "Назад"
+  useBackButton();
 
   useEffect(() => {
     getCostumes()
@@ -28,7 +32,6 @@ export default function Catalog() {
         <h1 className="catalog-title">🎭 Прокат костюмов</h1>
         <p className="catalog-subtitle">Выберите костюм для бронирования</p>
         
-        {/* 🆕 Кнопка "Мои заказы" */}
         <button 
           className="orders-btn"
           onClick={() => navigate("/orders")}

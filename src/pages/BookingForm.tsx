@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { createBooking, getCostumes } from "../api/api";
 import WebApp from "@twa-dev/sdk";
+import { useBackButton } from "../hooks/useBackButton";
 import Loader from "../components/Loader";
 import BookingCalendar from "../components/BookingCalendar";
 import "./BookingForm.css";
@@ -12,8 +13,10 @@ export default function BookingForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [costume, setCostume] = useState<any>(null);
+
+  // 🆕 Подключаем хук для кнопки "Назад"
+  useBackButton();
   
-  // 🆕 Получаем selectedDate и selectedSize из navigate state
   const [selectedDate, setSelectedDate] = useState<string>(
     (location.state as any)?.selectedDate || ""
   );
@@ -34,7 +37,6 @@ export default function BookingForm() {
       const found = all.find((c: any) => c._id === id);
       setCostume(found);
       
-      // Если размер не выбран, берём первый доступный
       if (found && !selectedSize) {
         const stockBySize = found.stockBySize || {};
         const firstAvailable = found.sizes?.find((s: string) => (stockBySize[s] || 0) > 0);
@@ -69,7 +71,7 @@ export default function BookingForm() {
         userTgId: WebApp.initDataUnsafe?.user?.id || 0,
         costumeId: id,
         size: selectedSize,
-        bookingDate: selectedDate, // 🆕 Передаём дату
+        bookingDate: selectedDate,
         ...form,
       });
 
@@ -99,7 +101,7 @@ export default function BookingForm() {
       <h2 className="booking-title">Бронирование костюма</h2>
 
       <div className="booking-form">
-        {/* 🆕 Календарь */}
+        {/* Календарь */}
         <div style={{ marginBottom: "20px" }}>
           <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
             📅 Дата аренды *
@@ -141,7 +143,7 @@ export default function BookingForm() {
           <label>Телефон *</label>
         </div>
 
-        {/* 🆕 Размер */}
+        {/* Размер */}
         <div style={{ marginBottom: "20px" }}>
           <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
             Размер *
