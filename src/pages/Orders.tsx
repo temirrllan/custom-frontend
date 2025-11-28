@@ -89,9 +89,9 @@ export default function Orders() {
   return (
     <div className="orders-page">
       <header className="orders-header">
-        <button className="back-btn" onClick={() => nav("/")}>
+        {/* <button className="back-btn" onClick={() => nav("/")}>
           ←
-        </button>
+        </button> */}
         <h1 className="orders-title">Мои заказы</h1>
       </header>
 

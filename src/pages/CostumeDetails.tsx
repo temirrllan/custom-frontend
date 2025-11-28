@@ -68,9 +68,9 @@ export default function CostumeDetails() {
   return (
     <div className="page-container">
       <header className="header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
+        {/* <button className="back-btn" onClick={() => navigate(-1)}>
           ←
-        </button>
+        </button> */}
         <h1 className="page-title">{costume.title}</h1>
       </header>
 
