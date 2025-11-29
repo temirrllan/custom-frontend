@@ -1,4 +1,3 @@
-// frontend/src/admin/BookingsAdmin.tsx
 import { useEffect, useState } from "react";
 import { adminApi } from "../api/adminApi";
 import "./admin.css";

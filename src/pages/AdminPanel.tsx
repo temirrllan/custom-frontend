@@ -14,8 +14,8 @@ export default function AdminPanel() {
       <Route path="/" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="costumes" element={<CostumesAdmin />} />
-        <Route path="costumes/:id/edit" element={<CostumeEditor />} /> {/* 🆕 редактирование */}
-        <Route path="costumes/:id" element={<CostumeView />} /> {/* 🆕 просмотр */}
+        <Route path="costumes/:id/edit" element={<CostumeEditor />} /> 
+        <Route path="costumes/:id" element={<CostumeView />} /> 
         <Route path="bookings" element={<BookingsAdmin />} />
         <Route path="stock" element={<StockAdmin />} />
         <Route path="logs" element={<LogsAdmin />} />

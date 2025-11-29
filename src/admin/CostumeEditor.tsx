@@ -24,7 +24,7 @@ export default function CostumeEditor() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // 🆕 Для модального окна с ошибкой
+  //Для модального окна с ошибкой
   const [errorModal, setErrorModal] = useState<string | null>(null);
 
   // Для добавления размеров
@@ -84,7 +84,7 @@ export default function CostumeEditor() {
     }
   };
 
-  // Добавить размер с количеством
+  // Добавлиние размера с количеством
   const addSize = () => {
     const trimmed = newSize.trim().toUpperCase();
     if (!trimmed) {
@@ -113,7 +113,7 @@ export default function CostumeEditor() {
     setNewStock("");
   };
 
-  // Удалить размер
+  // Удалиние размера
   const removeSize = (size: string) => {
     const newSizes = state.sizes.filter((s: string) => s !== size);
     const newStock = { ...state.stockBySize };
@@ -121,7 +121,7 @@ export default function CostumeEditor() {
     setState({ ...state, sizes: newSizes, stockBySize: newStock });
   };
 
-  // Изменить количество для размера
+  // Измениние количества по размеру
   const updateStock = (size: string, value: number) => {
     if (value < 0) {
       setErrorModal("⚠️ Количество не может быть отрицательным");
@@ -195,7 +195,6 @@ export default function CostumeEditor() {
 
   return (
     <>
-      {/* 🆕 Модальное окно с ошибкой */}
       {errorModal && (
         <div className="error-modal-overlay" onClick={() => setErrorModal(null)}>
           <div className="error-modal" onClick={(e) => e.stopPropagation()}>
@@ -216,7 +215,6 @@ export default function CostumeEditor() {
         <h2>{id === "new" ? "➕ Новый костюм" : "✏️ Редактировать костюм"}</h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {/* Название */}
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
               Название костюма *
@@ -228,7 +226,6 @@ export default function CostumeEditor() {
             />
           </div>
 
-          {/* Цена */}
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
               Цена за аренду (₽) *
@@ -243,13 +240,11 @@ export default function CostumeEditor() {
             />
           </div>
 
-          {/* Размеры + количество */}
           <div>
             <label style={{ display: "block", marginBottom: "12px", fontWeight: "600" }}>
               📏 Размеры и количество *
             </label>
-            
-            {/* Список уже добавленных размеров */}
+
             {state.sizes.length > 0 && (
               <div style={{ 
                 display: "grid", 
@@ -357,7 +352,6 @@ export default function CostumeEditor() {
             </p>
           </div>
 
-          {/* Рост */}
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
               📐 Рост ребёнка
@@ -369,7 +363,6 @@ export default function CostumeEditor() {
             />
           </div>
 
-          {/* Примечание */}
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
               📝 Примечание
@@ -382,7 +375,6 @@ export default function CostumeEditor() {
             />
           </div>
 
-          {/* Описание */}
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
               📄 Описание костюма
@@ -395,7 +387,6 @@ export default function CostumeEditor() {
             />
           </div>
 
-          {/* Доступность */}
           <div style={{
             padding: "16px",
             background: state.available ? "rgba(52, 199, 89, 0.1)" : "rgba(255, 59, 48, 0.1)",
@@ -434,7 +425,6 @@ export default function CostumeEditor() {
             </label>
           </div>
 
-          {/* Фото */}
           <div>
             <label style={{ display: "block", marginBottom: "12px", fontWeight: "600" }}>
               📸 Фотографии (до 5 шт.)
@@ -473,7 +463,6 @@ export default function CostumeEditor() {
             <p className="hint">До 5 фото (JPG, PNG, WebP, ≤ 5 МБ каждое)</p>
           </div>
 
-          {/* Кнопки */}
           <div className="actions" style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
             <button onClick={save} disabled={saving} style={{ flex: 1 }}>
               {saving ? "Сохранение..." : "💾 Сохранить костюм"}

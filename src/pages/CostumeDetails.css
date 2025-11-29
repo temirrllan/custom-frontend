@@ -70,7 +70,6 @@
   border-top-right-radius: var(--radius);
 }
 
-/* 🔧 ИСПРАВЛЕНИЕ: Кнопки навигации больше НЕ двигаются */
 .nav-btn {
   position: absolute;
   top: 50%;
@@ -89,7 +88,6 @@
   z-index: 5;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  /* ✅ ГЛАВНОЕ: фиксируем позицию при любых состояниях */
   transform: translateY(-50%) !important;
 }
 
@@ -101,7 +99,6 @@
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* ✅ Убираем любые изменения при фокусе */
 .nav-btn:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -115,7 +112,6 @@
   right: 10px;
 }
 
-/* Блокируем взаимодействие с содержимым кнопки */
 .nav-btn * {
   pointer-events: none;
 }
@@ -188,7 +184,6 @@
   font-weight: 400;
 }
 
-/* 🧾 Блок подробностей */
 .details-section {
   border-top: 1px solid var(--tg-theme-bg-color, #e5e5ea);
   margin-top: 10px;
@@ -238,7 +233,6 @@
   animation: fadeIn 0.5s ease-out;
 }
 
-/* Адаптивность для планшетов */
 @media (min-width: 640px) {
   .page-container {
     padding: 24px;
@@ -263,7 +257,6 @@
   }
 }
 
-/* Адаптивность для маленьких экранов */
 @media (max-width: 360px) {
   .page-container {
     padding: 10px;
@@ -297,7 +290,6 @@
   }
 }
 
-/* Landscape режим */
 @media (orientation: landscape) and (max-height: 500px) {
   .costume-image {
     height: 200px;

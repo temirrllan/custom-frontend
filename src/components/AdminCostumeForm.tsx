@@ -17,12 +17,12 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
     heightRange: "",
     notes: "",
     available: true,
-    photos: [] as string[], // серверные URL (полные)
+    photos: [] as string[], 
   });
 
-  // previews — отображаемые картинки (blob: или полные http(s) ссылки)
+  // previews — отображаемые картинки 
   const [previews, setPreviews] = useState<string[]>([]);
-  // localFiles — файлы, которые ещё не были загружены (соответствуют началу previews)
+  // localFiles — файлы, которые ещё не были загружены 
   const [, setLocalFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>("");
@@ -42,19 +42,16 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
       // previews и photos инициализируем из серверных ссылок
       setPreviews((costume.photos || []).map((p: string) => toFullUrl(p)));
     }
-    // cleanup: revoke any lingering blobs when unmount
     return () => {
       previews.forEach((p) => {
         if (p.startsWith("blob:")) URL.revokeObjectURL(p);
       });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [costume]);
 
   function toFullUrl(path: string) {
     if (!path) return path;
     if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    // path may be "/uploads/xxx.jpg"
     return `${API_BASE}${path}`;
   }
 
@@ -90,25 +87,20 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
       return;
     }
 
-    // 1) создаём локальные превью и добавляем в previews
     const localPreviews = valid.map((f) => URL.createObjectURL(f));
     setPreviews((p) => [...p, ...localPreviews]);
     setLocalFiles((lf) => [...lf, ...valid]);
 
-    // 2) грузим файлы на сервер — загружаем только те, которые ещё не загружены
     setUploading(true);
     try {
-      const res = await uploadPhotos(valid); // вернёт относительные ссылки ['/uploads/..']
+      const res = await uploadPhotos(valid); 
       const serverUrls: string[] = (res.urls || []).map((u: string) => toFullUrl(u));
 
-      // Заменяем первые localPreviews в previews на serverUrls по порядку
       setPreviews((current) => {
         const newPreviews = [...current];
-        // Найдём индексы локальных превью (те, что начинаются с blob:)
         let serverIdx = 0;
         for (let i = 0; i < newPreviews.length && serverIdx < serverUrls.length; i++) {
           if (newPreviews[i].startsWith("blob:")) {
-            // revoke old blob url
             URL.revokeObjectURL(newPreviews[i]);
             newPreviews[i] = serverUrls[serverIdx++];
           }
@@ -116,12 +108,9 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
         return newPreviews;
       });
 
-      // Добавляем serverUrls в form.photos
       setForm((prev: any) => ({ ...prev, photos: [...prev.photos, ...serverUrls] }));
 
-      // Так как эти файлы уже загружены, убираем их из localFiles
       setLocalFiles((lf) => {
-        // удаляем первые valid.length файлов
         const newLf = [...lf];
         newLf.splice(0, valid.length);
         return newLf;
@@ -129,29 +118,22 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
     } catch (err) {
       console.error("uploadPhotos err", err);
       setError("Ошибка загрузки на сервер");
-      // при ошибке — нужно убрать созданные blob previews и localFiles, либо оставить их для повторной загрузки
     } finally {
       setUploading(false);
-      // сброс input value, чтобы можно было выбрать те же файлы снова
       e.currentTarget.value = "";
     }
   };
 
   const handleRemovePreview = (index: number) => {
     const pv = previews[index];
-    // Если это blob (локальный), revoke objectURL и удалить из localFiles
     if (pv && pv.startsWith("blob:")) {
       URL.revokeObjectURL(pv);
-      // удаляем первый элемент из localFiles соответствующий этому локальному preview
       setLocalFiles((lf) => {
         const newLf = [...lf];
-        // здесь трудно точно сопоставить file с preview, но мы добавляем соответствие по порядку
-        // удаляем самый ранний файл (FIFO) — это корректно при последовательном добавлении
         newLf.splice(0, 1);
         return newLf;
       });
     } else {
-      // это серверный URL — удалить из form.photos
       setForm((prev: any) => ({ ...prev, photos: prev.photos.filter((p: string) => p !== pv) }));
     }
 
@@ -168,7 +150,7 @@ export default function AdminCostumeForm({ costume, onClose, onSave }: Props) {
       heightRange: form.heightRange || "",
       notes: form.notes || "",
       available: !!form.available,
-      photos: form.photos || [], // уже полные ссылки
+      photos: form.photos || [], 
     };
 
     try {

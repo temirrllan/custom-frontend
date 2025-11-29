@@ -14,7 +14,6 @@ export default function BookingForm() {
   const [success, setSuccess] = useState(false);
   const [costume, setCostume] = useState<any>(null);
 
-  // 🆕 Подключаем хук для кнопки "Назад"
   useBackButton();
   
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -131,19 +130,16 @@ export default function BookingForm() {
           )}
         </div>
 
-        {/* Имя клиента */}
         <div className="input-group">
           <input name="clientName" placeholder=" " value={form.clientName} onChange={handleChange} required />
           <label>Ваше имя *</label>
         </div>
 
-        {/* Телефон */}
         <div className="input-group">
           <input name="phone" placeholder=" " value={form.phone} onChange={handleChange} required />
           <label>Телефон *</label>
         </div>
 
-        {/* Размер */}
         <div style={{ marginBottom: "20px" }}>
           <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
             Размер *
@@ -178,19 +174,16 @@ export default function BookingForm() {
           </p>
         )}
 
-        {/* Имя ребёнка */}
         <div className="input-group">
           <input name="childName" placeholder=" " value={form.childName} onChange={handleChange} />
           <label>Имя ребёнка</label>
         </div>
 
-        {/* Возраст */}
         <div className="input-group">
           <input name="childAge" placeholder=" " value={form.childAge} onChange={handleChange} />
           <label>Возраст ребёнка</label>
         </div>
 
-        {/* Рост */}
         <div className="input-group">
           <input name="childHeight" placeholder=" " value={form.childHeight} onChange={handleChange} />
           <label>Рост ребёнка (см)</label>

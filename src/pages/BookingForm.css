@@ -145,7 +145,6 @@
   }
 }
 
-/* Адаптивность для планшетов */
 @media (min-width: 640px) {
   .booking-wrapper {
     padding: 24px;
@@ -162,7 +161,6 @@
   }
 }
 
-/* Адаптивность для маленьких экранов */
 @media (max-width: 360px) {
   .booking-wrapper {
     padding: 12px;
@@ -195,7 +193,6 @@
   }
 }
 
-/* Поддержка landscape режима */
 @media (orientation: landscape) and (max-height: 500px) {
   .booking-wrapper {
     padding: 12px;
@@ -215,7 +212,6 @@
   }
 }
 
-/* Улучшение для клавиатуры на мобильных */
 @media (max-height: 600px) {
   .booking-form {
     max-height: calc(100vh - 100px);

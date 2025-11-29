@@ -30,7 +30,6 @@
   margin-bottom: 16px;
 }
 
-/* 🆕 Кнопка "Мои заказы" */
 .orders-btn {
   background: var(--tg-theme-button-color, #007aff);
   color: var(--tg-theme-button-text-color, #fff);

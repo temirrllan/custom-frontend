@@ -16,7 +16,6 @@ html, body {
   line-height: 1.5;
   font-weight: 400;
 
-  /* Telegram Mini App цветовая схема */
   color-scheme: light;
   color: var(--tg-theme-text-color, #1c1c1e);
   background-color: var(--tg-theme-bg-color, #f2f2f7);
@@ -123,7 +122,6 @@ img {
   display: block;
 }
 
-/* Адаптивность для разных размеров экранов */
 @media (max-width: 480px) {
   body {
     font-size: 14px;
@@ -135,19 +133,16 @@ img {
   }
 }
 
-/* Поддержка тёмной темы Telegram */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
   }
 }
 
-/* Плавная прокрутка */
 html {
   scroll-behavior: smooth;
 }
 
-/* Скрытие полосы прокрутки для лучшего вида в Mini App */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -166,7 +161,6 @@ html {
   background: rgba(0, 0, 0, 0.3);
 }
 
-/* Поддержка safe-area для устройств с вырезами (notch) */
 @supports (padding: max(0px)) {
   body {
     padding-left: max(0px, env(safe-area-inset-left));
@@ -174,7 +168,6 @@ html {
   }
 }
 
-/* Улучшение производительности анимаций */
 .costume-card,
 .back-btn,
 .main-btn,
@@ -184,7 +177,6 @@ html {
   will-change: transform;
 }
 
-/* Предотвращение выделения текста при быстрых касаниях */
 button,
 a {
   -webkit-touch-callout: none;
@@ -192,13 +184,11 @@ a {
   user-select: none;
 }
 
-/* Улучшение отображения изображений */
 img {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 
-/* Улучшение для форм на iOS */
 input,
 textarea,
 select {
@@ -212,7 +202,6 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-/* Предотвращение zoom при двойном тапе на iOS (важно для форм) */
 input[type="text"],
 input[type="tel"],
 input[type="email"],

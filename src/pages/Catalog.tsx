@@ -11,7 +11,6 @@ export default function Catalog() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🆕 Подключаем хук для управления кнопкой "Назад"
   useBackButton();
 
   useEffect(() => {

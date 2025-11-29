@@ -18,7 +18,6 @@ export default function CostumeDetails() {
       const found = all.find((c: any) => c._id === id);
       setCostume(found);
       
-      // Автоматически выбираем первый доступный размер
       if (found?.sizes?.length > 0) {
         const stockBySize = found.stockBySize || {};
         const firstAvailable = found.sizes.find((s: string) => (stockBySize[s] || 0) > 0);
@@ -55,9 +54,7 @@ export default function CostumeDetails() {
       alert("⚠️ Пожалуйста, выберите дату бронирования");
       return;
     }
-    
-    // Передаём выбранную дату и размер в форму бронирования
-    navigate(`/book/${costume._id}`, { 
+        navigate(`/book/${costume._id}`, { 
       state: { 
         selectedDate, 
         selectedSize: selectedSize || availableSizes[0] 
@@ -116,7 +113,6 @@ export default function CostumeDetails() {
           </div>
 
           <div className="details-section">
-            {/* Размеры */}
             {costume.sizes?.length > 0 && (
               <div>
                 <strong>Выберите размер:</strong>
@@ -179,7 +175,6 @@ export default function CostumeDetails() {
         </div>
       </div>
 
-      {/* 🆕 Календарь бронирования */}
       {availableSizes.length > 0 && (
         <div style={{ marginTop: "16px" }}>
           <h3 style={{ marginBottom: "12px", fontSize: "18px", fontWeight: "700" }}>

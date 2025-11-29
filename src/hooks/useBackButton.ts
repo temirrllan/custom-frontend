@@ -2,9 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import WebApp from "@twa-dev/sdk";
 
-/**
- * 🔍 ОТЛАДОЧНАЯ ВЕРСИЯ с максимальным логированием
- */
+
 export function useBackButton() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,7 +14,6 @@ export function useBackButton() {
     console.log("📱 [DEBUG] Telegram WebApp версия:", WebApp.version);
     console.log("🖥️ [DEBUG] Платформа:", WebApp.platform);
 
-    // Проверяем наличие BackButton
     if (!WebApp.BackButton) {
       console.error("❌ [ERROR] WebApp.BackButton не существует!");
       console.log("💡 [HINT] Возможно, используется старая версия Telegram");
@@ -27,7 +24,6 @@ export function useBackButton() {
     const backButton = WebApp.BackButton;
     console.log("✅ [DEBUG] BackButton объект найден:", backButton);
 
-    // Проверяем методы
     console.log("🔧 [DEBUG] Доступные методы:", {
       show: typeof backButton.show,
       hide: typeof backButton.hide,
@@ -72,7 +68,6 @@ export function useBackButton() {
         console.error("❌ [ERROR] Ошибка установки onClick:", e);
       }
 
-      // Cleanup
       return () => {
         console.log("🧹 [CLEANUP] Удаление обработчика...");
         try {
@@ -88,10 +83,6 @@ export function useBackButton() {
   }, [location.pathname, navigate]);
 }
 
-/**
- * 🎯 Принудительная проверка BackButton (для тестирования)
- * Использовать в консоли DevTools
- */
 export function debugBackButton() {
   console.log("🔍 ========== DEBUG INFO ==========");
   console.log("WebApp:", WebApp);
@@ -108,7 +99,6 @@ export function debugBackButton() {
   console.log("==================================");
 }
 
-// Экспортируем для использования в консоли
 if (typeof window !== "undefined") {
   (window as any).debugBackButton = debugBackButton;
   console.log("💡 Для отладки используй: window.debugBackButton()");

@@ -9,7 +9,6 @@ import AdminPanel from "./pages/AdminPanel";
 import { getUserInfo } from "./api/api";
 import Loader from "./components/Loader";
 
-// 🆕 Компонент для управления BackButton
 function BackButtonManager() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ function BackButtonManager() {
     console.log("🔄 Путь изменился:", location.pathname);
     console.log("🏠 Главная страница:", isMainPage);
 
-    // Проверяем доступность BackButton
     if (!WebApp.BackButton) {
       console.warn("⚠️ BackButton недоступен в этой версии Telegram");
       return;
@@ -38,7 +36,6 @@ function BackButtonManager() {
         navigate(-1);
       };
 
-      // Удаляем старые обработчики перед добавлением нового
       WebApp.BackButton.offClick(handleClick);
       WebApp.BackButton.onClick(handleClick);
 
@@ -49,7 +46,7 @@ function BackButtonManager() {
     }
   }, [location.pathname, navigate]);
 
-  return null; // Этот компонент ничего не рендерит
+  return null;
 }
 
 function AppContent() {
@@ -62,10 +59,9 @@ function AppContent() {
         WebApp.ready();
         WebApp.expand();
 
-        // 🆕 Инициализируем BackButton
         if (WebApp.BackButton) {
           console.log("✅ BackButton доступен");
-          WebApp.BackButton.hide(); // Начальное состояние
+          WebApp.BackButton.hide(); 
         } else {
           console.warn("⚠️ BackButton недоступен");
         }
@@ -97,7 +93,6 @@ function AppContent() {
 
   return (
     <>
-      {/* 🆕 Менеджер кнопки "Назад" */}
       <BackButtonManager />
       
       {isAdmin ? (

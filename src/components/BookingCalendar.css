@@ -1,4 +1,3 @@
-/* ===== КОНТЕЙНЕР КАЛЕНДАРЯ ===== */
 .calendar-container {
   background: var(--tg-theme-secondary-bg-color, #fff);
   border-radius: 16px;
@@ -19,7 +18,6 @@
   font-size: 15px;
 }
 
-/* ===== ЗАГОЛОВОК ===== */
 .calendar-header {
   display: flex;
   justify-content: space-between;
@@ -62,7 +60,6 @@
   background: var(--tg-theme-hint-color, #e0e0e0);
 }
 
-/* ===== ДНИ НЕДЕЛИ ===== */
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -80,7 +77,6 @@
   padding: 6px 0;
 }
 
-/* ===== СЕТКА ДНЕЙ ===== */
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -91,7 +87,6 @@
   align-items: start;
 }
 
-/* ===== ДЕНЬ КАЛЕНДАРЯ (базовый стиль) ===== */
 .calendar-day {
   aspect-ratio: 1;
   display: flex;
@@ -112,7 +107,6 @@
   min-width: 0;
 }
 
-/* ===== ПУСТЫЕ ЯЧЕЙКИ ===== */
 .calendar-day.empty {
   background: transparent;
   cursor: default;
@@ -122,7 +116,6 @@
   padding: 0;
 }
 
-/* ===== СВОБОДНЫЕ ДАТЫ (при наведении) ===== */
 .calendar-day:not(.empty):not(.booked):not(.past):hover {
   background: var(--tg-theme-link-color, #007aff);
   color: #fff;
@@ -133,7 +126,6 @@
   transform: scale(0.95);
 }
 
-/* ===== ВЫБРАННАЯ ДАТА (синяя) ===== */
 .calendar-day.selected {
   background: var(--tg-theme-link-color, #007aff) !important;
   color: #fff !important;
@@ -141,7 +133,6 @@
   box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
 }
 
-/* 🔴🔴🔴 ЗАБРОНИРОВАННАЯ ДАТА (КРАСНАЯ) 🔴🔴🔴 */
 .calendar-day.booked {
   background: #ff3b30 !important;
   color: #fff !important;
@@ -151,7 +142,6 @@
   position: relative;
 }
 
-/* Крестик на забронированной дате */
 .calendar-day.booked::after {
   content: "✕";
   position: absolute;
@@ -161,7 +151,6 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* При наведении на забронированную дату */
 .calendar-day.booked:hover {
   background: #ff3b30 !important;
   color: #fff !important;
@@ -173,7 +162,6 @@
   transform: scale(0.98) !important;
 }
 
-/* ⚪ ПРОШЕДШИЕ ДАТЫ (серые) ===== */
 .calendar-day.past {
   background: transparent;
   color: var(--tg-theme-hint-color, #c7c7cc);
@@ -182,7 +170,6 @@
   opacity: 0.5;
 }
 
-/* ===== ЛЕГЕНДА ===== */
 .calendar-legend {
   display: flex;
   justify-content: center;
@@ -221,7 +208,6 @@
   background: var(--tg-theme-link-color, #007aff);
 }
 
-/* ===== МОДАЛЬНОЕ ОКНО ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -359,7 +345,6 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-/* ===== АНИМАЦИИ ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -382,7 +367,6 @@
   }
 }
 
-/* ===== АДАПТИВНОСТЬ ===== */
 @media (min-width: 400px) and (max-width: 640px) {
   .calendar-container {
     padding: 18px;
@@ -466,7 +450,6 @@
   }
 }
 
-/* iOS оптимизация */
 @supports (-webkit-touch-callout: none) {
   .calendar-day {
     -webkit-tap-highlight-color: transparent;
@@ -475,7 +458,6 @@
   }
 }
 
-/* Высокие DPI экраны */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .calendar-day.selected {
     box-shadow: 0 0 0 2.5px rgba(0, 122, 255, 0.3);

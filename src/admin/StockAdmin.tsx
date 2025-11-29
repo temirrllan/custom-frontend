@@ -22,7 +22,7 @@ export default function StockAdmin() {
   const adjustStock = async (costumeId: string, size: string, amount: number) => {
     try {
       await adminApi.post("/api/admin/stock/adjust", { costumeId, size, amount });
-      load(); // перезагружаем данные
+      load();
     } catch (err: any) {
       alert(err.response?.data?.error || "Ошибка при изменении стока");
     }
@@ -63,13 +63,11 @@ export default function StockAdmin() {
                   />
                 )}
 
-                {/* Информация */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <strong style={{ fontSize: "16px", display: "block", marginBottom: "8px" }}>
                     {c.title}
                   </strong>
 
-                  {/* Размеры и кнопки */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {c.sizes?.map((size: string) => {
                       const stock = c.stockBySize?.[size] || 0;
@@ -99,7 +97,6 @@ export default function StockAdmin() {
                             {stock > 0 ? `${stock} шт.` : "Нет"}
                           </span>
 
-                          {/* Кнопки +/− */}
                           <div style={{ marginLeft: "auto", display: "flex", gap: "6px" }}>
                             <button
                               onClick={() => adjustStock(c._id, size, -1)}

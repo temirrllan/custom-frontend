@@ -29,7 +29,7 @@ export default function CostumeView() {
   const adjustStock = async (size: string, amount: number) => {
     try {
       await adminApi.post("/api/admin/stock/adjust", { costumeId: id, size, amount });
-      load(); // перезагружаем данные
+      load();
     } catch (err: any) {
       alert(err.response?.data?.error || "Ошибка при изменении стока");
     }
@@ -60,7 +60,6 @@ export default function CostumeView() {
 
   return (
     <div className="admin-card">
-      {/* Шапка */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h2 style={{ margin: 0 }}>{costume.title}</h2>
         <button onClick={() => nav(`/costumes/${id}`)}>
@@ -68,7 +67,6 @@ export default function CostumeView() {
         </button>
       </div>
 
-      {/* Фото слайдер */}
       {photos.length > 0 && (
         <div style={{ position: "relative", marginBottom: "24px" }}>
           <img
@@ -112,7 +110,6 @@ export default function CostumeView() {
         </div>
       )}
 
-      {/* Информация */}
       <div style={{ display: "grid", gap: "16px", marginBottom: "24px" }}>
         <div>
           <strong>Цена:</strong> {costume.price} ₽
@@ -143,7 +140,6 @@ export default function CostumeView() {
         </div>
       </div>
 
-      {/* 🆕 Управление размерами и стоком */}
       <div>
         <h3 style={{ marginBottom: "16px" }}>📦 Управление размерами</h3>
         
@@ -220,7 +216,6 @@ export default function CostumeView() {
         )}
       </div>
 
-      {/* Кнопка назад */}
       <div style={{ marginTop: "24px" }}>
         <button className="secondary" onClick={() => nav("/costumes")}>
           ← Назад к списку

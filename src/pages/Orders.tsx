@@ -117,7 +117,6 @@ export default function Orders() {
                 </span>
               </div>
 
-              {/* 🆕 Описание статуса */}
               <div style={{
                 padding: "12px",
                 background: `${getStatusColor(order.status)}10`,
@@ -143,7 +142,6 @@ export default function Orders() {
                   </span>
                 </div>
 
-                {/* 🆕 Даты выдачи и возврата */}
                 {order.pickupDate && (
                   <div className="order-row">
                     <span className="label">📦 Выдача:</span>
@@ -184,7 +182,6 @@ export default function Orders() {
                 </div>
               </div>
 
-              {/* Кнопка отмены (только для новых заказов) */}
               {order.status === "new" && (
                 <button
                   className="cancel-btn"

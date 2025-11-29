@@ -3,7 +3,6 @@ import WebApp from "@twa-dev/sdk";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-// Настраиваем общий axios instance
 export const api = axios.create({
   baseURL: API_BASE,
 });
@@ -23,14 +22,12 @@ export async function createBooking(data: any) {
 
 // ---------- ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ ----------
 export async function getUserInfo(tgId?: number) {
-  // Если не передан явно — берём из Telegram SDK
   const userId = tgId || WebApp.initDataUnsafe?.user?.id;
 
   if (!userId) {
     throw new Error("Telegram ID not found");
   }
 
-  // Запрос на бэкенд
   const res = await fetch(`${API_BASE}/api/users/me`, {
     headers: {
       "x-tg-id": String(userId),

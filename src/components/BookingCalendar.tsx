@@ -20,7 +20,6 @@ export default function BookingCalendar({
   const [showModal, setShowModal] = useState(false);
   const [pendingDate, setPendingDate] = useState<string | null>(null);
 
-  // Загружаем забронированные даты при монтировании и при смене месяца/размера
   useEffect(() => {
     if (size) {
       loadBookedDates();
@@ -108,7 +107,6 @@ export default function BookingCalendar({
       return;
     }
 
-    // Показываем модальное окно с правилами
     setPendingDate(dateStr);
     setShowModal(true);
   };
@@ -145,19 +143,16 @@ export default function BookingCalendar({
 
   const days = [];
   
-  // Пустые ячейки до начала месяца
   for (let i = 0; i < startingDayOfWeek; i++) {
     days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
   }
 
-  // Дни месяца
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = formatDate(year, month, day);
     const isBooked = isDateBooked(dateStr);
     const isPast = isDatePast(dateStr);
     const isSelected = dateStr === selectedDate;
 
-    // Определяем CSS классы
     let className = "calendar-day";
     if (isBooked) className += " booked";
     if (isPast) className += " past";
